@@ -56,7 +56,7 @@ public class Edge implements IEdge {
 		if (summitSet == null) {
 			if (other.summitSet != null)
 				return false;
-		} else if (!summitSet.containsAll(other.summitSet) || !other.summitSet.containsAll(summitSet))
+		} else if (!summitSet.containsAll(other.summitSet))
 			return false;
 		if (type != other.type)
 			return false;
@@ -74,6 +74,7 @@ public class Edge implements IEdge {
 		String s = "";
 		for (ISummit sum: summitSet)
 			s = s + sum.toString() + ", ";
+		s = s + "(" + coordinates.getX() + ", " + coordinates.getY() + ")";
 		return s;
 	}
 	

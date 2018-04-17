@@ -1,9 +1,10 @@
 package ch.makery.address;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Random;
 import java.util.TreeSet;
@@ -31,6 +32,9 @@ import robot.IRobot;
 import robot.Robot;
 
 public class Main extends Application {
+	public static NavigableSet<ISummit> objectives = new TreeSet<>();
+	
+	private Map<ISummit, Line> summitRepresentation = new HashMap<>();
 	private static final int NB_ROBOTS = 6;
 
 	private Stage primaryStage;
@@ -56,6 +60,7 @@ public class Main extends Application {
 		graph.addSummit(s122);
 		graph.addSummit(s132);
 		IEdge e12 = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(200, 200));
+		graph.addEdge(e12);
 		
 		tmpList = new TreeSet<>();
 		ISummit s2 = new Summit("s2", 10);
@@ -65,12 +70,8 @@ public class Main extends Application {
 		tmpList.add(s2);
 		graph.addSummit(s2);
 		IEdge e21 = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(300, 200));
-		
-		// Add CROSS
-		graph.addEdge(e12);
 		graph.addEdge(e21);
 
-		// Add INTERSECTION
 		ISummit s3 = new Summit("s3", 20);
 		ISummit s4 = new Summit("s4", 20);
 		graph.addSummit(s3);
@@ -139,31 +140,39 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		Random r = new Random();
-		List<IRobot> robotList = new ArrayList<>();
+		List<IRobot> robotList = new LinkedList<>();
 		List<ISummit> summitList = graph.getSummitList();
-		List<ISummit> objectives = new ArrayList<>();
 		int nbSummits = summitList.size();
 
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Robot Simulator");
 
 		initRootLayout();
+		root = new Group();
+		Scene scene = new Scene(root, 800, 600, Color.BLACK);
+		primaryStage.setScene(scene);
 
-		/* TODO : L'ERREUR VIENT PROBABLEMENT D'ICI */
 		for (int i = 0; i < NB_ROBOTS; i++) {
-			robotList.add(new Robot(summitList.get(r.nextInt(nbSummits)), null, null, this));
+			boolean alreadyUsed = false;
+			ISummit s = summitList.get(r.nextInt(nbSummits));
+			IRobot robot = new Robot(s, null, null, this);
+			robotList.add(robot);
+			for (int j = 0; j < i && !alreadyUsed; j++) {
+				if (robot.getCoordinates().equals(robotList.get(j).getCoordinates())) {
+					robotList.remove(robot);
+					alreadyUsed = true;
+				}
+			}
 		}
-		for (int j = 0; j < r.nextInt(nbSummits + 1); j++) {
-			objectives.add(summitList.get(r.nextInt(nbSummits)));
-		}
-		for (int i = 0; i < NB_ROBOTS; i++) {
-			for (ISummit s: objectives)
-				robotList.get(i).addObjective(s);
+		for (int j = 0; j <= r.nextInt(nbSummits + 1) + 1; j++) {
+			ISummit s = summitList.get(r.nextInt(nbSummits));
+			s.setObjective(true);
+			objectives.add(s);
 		}
 		
 		printGraph();
 
-		for (int i = 0; i < NB_ROBOTS; i++) {
+		for (int i = 0; i < robotList.size(); i++) {
 			robotList.get(i).run();
 		}
 
@@ -206,6 +215,7 @@ public class Main extends Application {
 		if (e[0].getType().equals(e[1].getType()) && e[0].getType().equals(EdgeType.CROSS)) {
 			printCrosses(s);
 		}
+		summitRepresentation.put(s, l);
 	}
 
 	public void printCrosses(ISummit s) {
@@ -233,10 +243,6 @@ public class Main extends Application {
 	}
 
 	public void printGraph() {
-		root = new Group();
-		Scene scene = new Scene(root, 800, 600, Color.BLACK);
-
-		primaryStage.setScene(scene);
 
 		// Creation of circles representing crosses and intersections
 		List<IEdge> edgeList = graph.getEdgeList();
@@ -257,9 +263,8 @@ public class Main extends Application {
 		}
 	}
 
-	public Circle initPrintRobot(Coordinates coord, Circle circle) {
-
-		circle = new Circle();
+	public Circle initPrintRobot(Coordinates coord) {
+		Circle circle = new Circle();
 		circle.setCenterX(coord.getX());
 		circle.setCenterY(coord.getY());
 		circle.setRadius(5);
@@ -269,5 +274,14 @@ public class Main extends Application {
 		root.getChildren().add(circle);
 
 		return circle;
+	}
+
+	public void removePrintedRobot(final Circle c) {
+		root.getChildren().remove(c);
+	}
+
+	public void changeSummitColor(ISummit currentSummit) {
+		Line l = summitRepresentation.get(currentSummit);
+		l.setStroke(Color.WHITE);
 	}
 }

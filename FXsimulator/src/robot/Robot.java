@@ -1,5 +1,7 @@
 package robot;
 
+import java.sql.Time;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NavigableSet;
@@ -7,9 +9,11 @@ import java.util.Random;
 import java.util.TreeSet;
 
 import ch.makery.address.Main;
+import javafx.animation.Animation;
 import javafx.animation.PathTransition;
 import javafx.animation.Timeline;
-import javafx.scene.paint.Color;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -22,8 +26,7 @@ import map.ISummit;
 public class Robot implements IRobot {
 	private ISummit currentSummit;
 	private IEdge nextEdge;
-	private Coordinates coordinates;
-	private NavigableSet<ISummit> objectives = new TreeSet<>();
+	private Coordinates coordinates = new Coordinates(0, 0);
 	private List<ISummit> way = new LinkedList<>();
 	private ICommunicationChannel chat;
 
@@ -37,84 +40,84 @@ public class Robot implements IRobot {
 		this.nextEdge = startSummit.getEnds()[r.nextInt(2)];
 		this.chat = chat;
 		this.main = main;
-		coordinates = startSummit.getOtherEnd(this.nextEdge).getCoordinates();
+		Coordinates c = startSummit.getOtherEnd(this.nextEdge).getCoordinates();
+		coordinates.setX(c.getX());
+		coordinates.setY(c.getY());
 	}
 
-	@Override
-	public void addObjective(ISummit s) {
-		if (!objectives.contains(s))
-			objectives.add(s);
-		s.setObjective(true);
-	}
+	public void makeWay(ISummit previousSummit, IEdge currentEdge) {
+		NavigableSet<ISummit> opportunities = currentEdge.getSummits();
+		List<ISummit> oppForRandom = new ArrayList<>();
+		Random r = new Random();
 
-	public void makeWay(ISummit s, IEdge e) {
-		if (!objectives.isEmpty()) {
-			NavigableSet<ISummit> opportunities = e.getSummits();
-			ISummit summitTested = opportunities.first();
-			if (objectives.contains(summitTested))
-				objectives.remove(summitTested);
-			// makeWay(summitTested, summitTested.getOtherEnd(e));
-		}
+		for (ISummit s : opportunities)
+			oppForRandom.add(s);
+
+		way.add(oppForRandom.get(r.nextInt(oppForRandom.size())));
+		// if (Main.objectives.contains(summitTested))
+		// Main.objectives.remove(summitTested);
+		// makeWay(summitTested, summitTested.getOtherEnd(e));
 	}
 
 	private void chooseDirection() {
 		if (way.isEmpty())
-			makeWay(currentSummit, currentSummit.getOtherEnd(nextEdge));
-		else {
-			currentSummit = way.get(0);
-			nextEdge = currentSummit.getOtherEnd(nextEdge);
-			way.remove(0);
-		}
+			makeWay(currentSummit, nextEdge);
+		currentSummit = way.get(0);
+		nextEdge = currentSummit.getOtherEnd(nextEdge);
+		way.remove(0);
 	}
 
 	private void envolveCoordinates() {
 		coordinates.setX(nextEdge.getCoordinates().getX());
 		coordinates.setY(nextEdge.getCoordinates().getY());
-		/*
-		 * if (coordinates.getX() == nextEdge.getCoordinates().getX()) { if
-		 * (coordinates.getY() < nextEdge.getCoordinates().getY())
-		 * coordinates.setY(coordinates.getY() + 10); else
-		 * coordinates.setY(coordinates.getY() - 10); } else { if (coordinates.getX() <
-		 * nextEdge.getCoordinates().getX()) coordinates.setX(coordinates.getX() + 10);
-		 * else coordinates.setX(coordinates.getX() - 10); }
-		 */
 	}
 
 	@Override
 	public void run() {
 
-		Circle c = null;
+		// Create a circle and print it on the graphic window
+		Circle c = main.initPrintRobot(coordinates);
 
-		Path path = new Path();
-		PathTransition pathTransition = new PathTransition();
+		double duration = 0;
+		double cumulateDuration = 0;
 
-		pathTransition.setPath(path);
+		while (!Main.objectives.isEmpty()) {
+			// Initialize the transition
+			Path path = new Path();
+			path.getElements().add(new MoveTo(coordinates.getX(), coordinates.getY()));
+			PathTransition pathTransition = new PathTransition();
+			pathTransition.setPath(path);
+			pathTransition.setNode(c);
+			pathTransition.setCycleCount(1);
 
-		c = main.initPrintRobot(coordinates, c);
+			// Define the transition delay and duration
+			pathTransition.setDelay(Duration.millis(cumulateDuration));
+			duration = 200 * (currentSummit.getLength());
+			if (duration == 0)
+				duration = 1;
+			pathTransition.setDuration(Duration.millis(duration));
+			cumulateDuration += duration;
 
-		pathTransition.setNode(c);
-		pathTransition.setCycleCount(Timeline.INDEFINITE);
+			// Define the end coordinates and the shape of the movement
 
-		// TODO : improve to put makeWay in a new thread and put a while there
-		if (!objectives.isEmpty()) {
-			double duree = 100 * (currentSummit.getLength());
-			if (duree == 0)
-				duree = 1;
-			pathTransition.setDuration(Duration.millis(duree));
-	
-			if (!coordinates.equals(nextEdge.getCoordinates())) {
-				System.out.println("Mon sommet : " + currentSummit.getName() + "\nMa direction : " + nextEdge.toString() + "\nJe viens de : " + currentSummit.getOtherEnd(nextEdge).toString());
-				path.getElements().add(new MoveTo(coordinates.getX(), coordinates.getY()));
-				envolveCoordinates();
-				path.getElements().add(new LineTo(coordinates.getX(), coordinates.getY()));
-				pathTransition.play();
+			envolveCoordinates();
+			path.getElements().add(new LineTo(coordinates.getX(), coordinates.getY()));
+			pathTransition.play();
+
+			// When the robot arrives on the next edge, we choose the next direction
+			if (Main.objectives.contains(currentSummit)) {
+				Main.objectives.remove(currentSummit);
+		    	currentSummit.setObjective(false);
+				pathTransition.setOnFinished(new EventHandler<ActionEvent>() {
+				    @Override
+				    public void handle(ActionEvent event) {
+				    	main.changeSummitColor(currentSummit);
+				    }
+				});
 			}
 			chooseDirection();
-			if (objectives.contains(currentSummit)) {
-				objectives.remove(currentSummit);
-				currentSummit.setObjective(false);
-			}
 		}
+
 	}
 
 	@Override

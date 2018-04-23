@@ -1,19 +1,14 @@
 package robot;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NavigableSet;
 import java.util.Random;
-import java.util.TreeSet;
-
 import ch.makery.address.Main;
-import javafx.animation.Animation;
 import javafx.animation.PathTransition;
-import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.animation.StrokeTransition;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -73,7 +68,7 @@ public class Robot implements IRobot {
 	}
 
 	@Override
-	public void run() {
+	public Runnable run() {
 
 		// Create a circle and print it on the graphic window
 		Circle c = main.initPrintRobot(coordinates);
@@ -92,7 +87,7 @@ public class Robot implements IRobot {
 
 			// Define the transition delay and duration
 			pathTransition.setDelay(Duration.millis(cumulateDuration));
-			duration = 200 * (currentSummit.getLength());
+			duration = 1 * (currentSummit.getLength());
 			if (duration == 0)
 				duration = 1;
 			pathTransition.setDuration(Duration.millis(duration));
@@ -102,22 +97,20 @@ public class Robot implements IRobot {
 
 			envolveCoordinates();
 			path.getElements().add(new LineTo(coordinates.getX(), coordinates.getY()));
-			pathTransition.play();
+			
 
 			// When the robot arrives on the next edge, we choose the next direction
 			if (Main.objectives.contains(currentSummit)) {
 				Main.objectives.remove(currentSummit);
 		    	currentSummit.setObjective(false);
-				pathTransition.setOnFinished(new EventHandler<ActionEvent>() {
-				    @Override
-				    public void handle(ActionEvent event) {
-				    	main.changeSummitColor(currentSummit);
-				    }
-				});
+		    	StrokeTransition changeSummitColor = new StrokeTransition(Duration.ONE, main.getLine(currentSummit), Color.RED, Color.WHITE);
+		    	changeSummitColor.setDelay(Duration.millis(cumulateDuration));
+		    	changeSummitColor.play();
 			}
+			pathTransition.play();
 			chooseDirection();
 		}
-
+		return(null);
 	}
 
 	@Override

@@ -35,7 +35,7 @@ public class Main extends Application {
 	public static NavigableSet<ISummit> objectives = new TreeSet<>();
 
 	private Map<ISummit, Line> summitRepresentation = new HashMap<>();
-	private static final int NB_ROBOTS = 6;
+	private static final int NB_ROBOTS = 157; // 157 is the number of summit on the Nancy graph
 
 	private Stage primaryStage;
 	private AnchorPane rootLayout;
@@ -43,7 +43,11 @@ public class Main extends Application {
 	private IGraph graph;
 	private Group root = null;
 
-	/* The name of the variables are the same than in the jointed map (Nancy Map.png) */
+	/*
+	 * The name of the variables are the same than in the jointed map 
+	 * (Nancy Map.png)
+	 * Be careful: in a cross, the 2 summit by alphabetic order has to be the shorter
+	 */
 	public Main() {
 		graph = new Graph();
 		NavigableSet<ISummit> tmpList = new TreeSet<>();
@@ -220,7 +224,7 @@ public class Main extends Application {
 		tmpList.add(s83A);
 		IEdge eC8A = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(1050, 10));
 		graph.addEdge(eC8A);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sA = new Summit("sA", 40);
 		graph.addSummit(sA);
@@ -230,7 +234,7 @@ public class Main extends Application {
 		tmpList.add(sA);
 		IEdge eCA8 = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(1170, 10));
 		graph.addEdge(eCA8);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sA1B = new Summit("sA1B", 180);
 		ISummit sA2B = new Summit("sA2B", 120);
@@ -244,7 +248,7 @@ public class Main extends Application {
 		tmpList.add(sA3B);
 		IEdge eCAB = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(1210, 10));
 		graph.addEdge(eCAB);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sB = new Summit("sB", 360);
 		graph.addSummit(sB);
@@ -254,7 +258,7 @@ public class Main extends Application {
 		tmpList.add(sB);
 		IEdge eCBA = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(1330, 10));
 		graph.addEdge(eCBA);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit s1C = new Summit("s1C", 15);
 		ISummit s1D = new Summit("s1D", 10);
@@ -265,7 +269,7 @@ public class Main extends Application {
 		tmpList.add(s1D);
 		IEdge eI1CD = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(168, 170));
 		graph.addEdge(eI1CD);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sC = new Summit("sC", 20);
 		ISummit sCD = new Summit("sCD", 15);
@@ -276,7 +280,7 @@ public class Main extends Application {
 		tmpList.add(sCD);
 		IEdge eIC1D = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(173, 175));
 		graph.addEdge(eIC1D);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sD = new Summit("sD", 160);
 		graph.addSummit(sD);
@@ -285,7 +289,7 @@ public class Main extends Application {
 		tmpList.add(sD);
 		IEdge eID1C = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(168, 180));
 		graph.addEdge(eID1C);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sC1E = new Summit("sC1E", 180);
 		ISummit sC2E = new Summit("sC2E", 120);
@@ -299,7 +303,7 @@ public class Main extends Application {
 		tmpList.add(sC3E);
 		IEdge eCCE = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(193, 175));
 		graph.addEdge(eCCE);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sE = new Summit("sE", 20);
 		graph.addSummit(sE);
@@ -309,8 +313,8 @@ public class Main extends Application {
 		tmpList.add(sE);
 		IEdge eCEC = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(313, 175));
 		graph.addEdge(eCEC);
-		
-		tmpList = new TreeSet<>(); 
+
+		tmpList = new TreeSet<>();
 		ISummit s5E = new Summit("s5E", 15);
 		ISummit sEF = new Summit("sEF", 10);
 		graph.addSummit(s5E);
@@ -320,7 +324,7 @@ public class Main extends Application {
 		tmpList.add(sEF);
 		IEdge eIE5F = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(330, 175));
 		graph.addEdge(eIE5F);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit s5F = new Summit("s5F", 15);
 		graph.addSummit(s5F);
@@ -329,7 +333,7 @@ public class Main extends Application {
 		tmpList.add(s5F);
 		IEdge eI5EF = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(335, 170));
 		graph.addEdge(eI5EF);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sF = new Summit("sF", 20);
 		graph.addSummit(sF);
@@ -338,7 +342,7 @@ public class Main extends Application {
 		tmpList.add(sF);
 		IEdge eIF5E = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(340, 175));
 		graph.addEdge(eIF5E);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sFG = new Summit("sFG", 15);
 		ISummit sFH = new Summit("sFH", 15);
@@ -349,7 +353,7 @@ public class Main extends Application {
 		tmpList.add(sFH);
 		IEdge eIFGH = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(360, 175));
 		graph.addEdge(eIFGH);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sG = new Summit("sG", 613);
 		ISummit sGH = new Summit("sGH", 10);
@@ -360,7 +364,7 @@ public class Main extends Application {
 		tmpList.add(sGH);
 		IEdge eIGFH = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(365, 170));
 		graph.addEdge(eIGFH);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sH = new Summit("sH", 105);
 		graph.addSummit(sH);
@@ -369,7 +373,7 @@ public class Main extends Application {
 		tmpList.add(sH);
 		IEdge eIHFG = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(365, 180));
 		graph.addEdge(eIHFG);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sDI = new Summit("sDI", 15);
 		ISummit sDJ = new Summit("sDJ", 15);
@@ -380,7 +384,7 @@ public class Main extends Application {
 		tmpList.add(sDI);
 		IEdge eIDIJ = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(168, 340));
 		graph.addEdge(eIDIJ);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sI = new Summit("sI", 148);
 		ISummit sIJ = new Summit("sIJ", 10);
@@ -391,7 +395,7 @@ public class Main extends Application {
 		tmpList.add(sIJ);
 		IEdge eIIDJ = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(163, 345));
 		graph.addEdge(eIIDJ);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sJ = new Summit("sJ", 32);
 		graph.addSummit(sJ);
@@ -400,7 +404,7 @@ public class Main extends Application {
 		tmpList.add(sIJ);
 		IEdge eIJDI = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(173, 345));
 		graph.addEdge(eIJDI);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sIK = new Summit("sIK", 10);
 		ISummit sIL = new Summit("sIL", 15);
@@ -409,7 +413,7 @@ public class Main extends Application {
 		tmpList.add(sIL);
 		IEdge eIIKL = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(15, 345));
 		graph.addEdge(eIIKL);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sK = new Summit("sK", 5);
 		ISummit sKL = new Summit("sKL", 15);
@@ -418,12 +422,12 @@ public class Main extends Application {
 		tmpList.add(sIK);
 		IEdge eIKIL = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(5, 345));
 		graph.addEdge(eIKIL);
-		
+
 		tmpList = new TreeSet<>();
 		tmpList.add(sK);
 		IEdge endK = new Edge(1, tmpList, EdgeType.INTERSECTION, new Coordinates(0, 345));
 		graph.addEdge(endK);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sL = new Summit("sL", 165);
 		graph.addSummit(sL);
@@ -432,7 +436,7 @@ public class Main extends Application {
 		tmpList.add(sL);
 		IEdge eILIK = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(10, 350));
 		graph.addEdge(eILIK);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sJ1M = new Summit("sJ1M", 180);
 		ISummit sJ2M = new Summit("sJ2M", 120);
@@ -446,7 +450,7 @@ public class Main extends Application {
 		tmpList.add(sJ3M);
 		IEdge eCJM = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(205, 345));
 		graph.addEdge(eCJM);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sM = new Summit("sM", 10);
 		graph.addSummit(sM);
@@ -456,12 +460,12 @@ public class Main extends Application {
 		tmpList.add(sJ3M);
 		IEdge eCMJ = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(325, 345));
 		graph.addEdge(eCMJ);
-		
+
 		tmpList = new TreeSet<>();
 		tmpList.add(sM);
 		IEdge endM = new Edge(1, tmpList, EdgeType.INTERSECTION, new Coordinates(335, 345));
 		graph.addEdge(endM);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sH1N = new Summit("sH1N", 180);
 		ISummit sH2N = new Summit("sH2N", 120);
@@ -475,7 +479,7 @@ public class Main extends Application {
 		tmpList.add(sH3N);
 		IEdge eCHN = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(365, 285));
 		graph.addEdge(eCHN);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sN = new Summit("sN", 330);
 		graph.addSummit(sN);
@@ -485,7 +489,7 @@ public class Main extends Application {
 		tmpList.add(sN);
 		IEdge eCNH = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(365, 405));
 		graph.addEdge(eCNH);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sG1O = new Summit("sG1O", 180);
 		ISummit sG2O = new Summit("sG2O", 120);
@@ -499,7 +503,7 @@ public class Main extends Application {
 		tmpList.add(sG3O);
 		IEdge eCGO = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(610, 500));
 		graph.addEdge(eCGO);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sO = new Summit("sO", 613);
 		graph.addSummit(sO);
@@ -509,7 +513,7 @@ public class Main extends Application {
 		tmpList.add(sO);
 		IEdge eCOG = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(730, 500));
 		graph.addEdge(eCOG);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sOQ = new Summit("sOQ", 10);
 		ISummit sOP = new Summit("sOP", 15);
@@ -520,7 +524,7 @@ public class Main extends Application {
 		tmpList.add(sOP);
 		IEdge eIOPQ = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1005, 170));
 		graph.addEdge(eIOPQ);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sP = new Summit("sP", 20);
 		ISummit sPQ = new Summit("sPQ", 15);
@@ -531,7 +535,7 @@ public class Main extends Application {
 		tmpList.add(sPQ);
 		IEdge eIPOQ = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1010, 175));
 		graph.addEdge(eIPOQ);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sQ = new Summit("sQ", 105);
 		graph.addSummit(sQ);
@@ -540,7 +544,7 @@ public class Main extends Application {
 		tmpList.add(sPQ);
 		IEdge eIQOP = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1005, 180));
 		graph.addEdge(eIQOP);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit s9P = new Summit("s9P", 15);
 		ISummit s9R = new Summit("s9R", 15);
@@ -551,7 +555,7 @@ public class Main extends Application {
 		tmpList.add(s9R);
 		IEdge eI9PR = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1035, 170));
 		graph.addEdge(eI9PR);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sPR = new Summit("sPR", 10);
 		graph.addSummit(sPR);
@@ -560,7 +564,7 @@ public class Main extends Application {
 		tmpList.add(sP);
 		IEdge eIP9R = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1030, 175));
 		graph.addEdge(eIP9R);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sR = new Summit("sR", 20);
 		graph.addSummit(sR);
@@ -569,7 +573,7 @@ public class Main extends Application {
 		tmpList.add(sR);
 		IEdge eIR9P = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1040, 175));
 		graph.addEdge(eIR9P);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sR1S = new Summit("sR1S", 180);
 		ISummit sR2S = new Summit("sR2S", 120);
@@ -583,7 +587,7 @@ public class Main extends Application {
 		tmpList.add(sR3S);
 		IEdge eCRS = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(1060, 175));
 		graph.addEdge(eCRS);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sS = new Summit("sS", 20);
 		graph.addSummit(sS);
@@ -593,7 +597,7 @@ public class Main extends Application {
 		tmpList.add(sS);
 		IEdge eCSR = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(1180, 175));
 		graph.addEdge(eCSR);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sBS = new Summit("sBS", 15);
 		ISummit sST = new Summit("sST", 15);
@@ -604,7 +608,7 @@ public class Main extends Application {
 		tmpList.add(sST);
 		IEdge eISBT = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1200, 175));
 		graph.addEdge(eISBT);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sBT = new Summit("sBT", 10);
 		graph.addSummit(sBT);
@@ -613,7 +617,7 @@ public class Main extends Application {
 		tmpList.add(sBT);
 		IEdge eIBST = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1205, 170));
 		graph.addEdge(eIBST);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sT = new Summit("sT", 160);
 		graph.addSummit(sT);
@@ -622,7 +626,7 @@ public class Main extends Application {
 		tmpList.add(sBT);
 		IEdge eITBS = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1205, 180));
 		graph.addEdge(eITBS);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sQ1U = new Summit("sQ1U", 180);
 		ISummit sQ2U = new Summit("sQ2U", 120);
@@ -636,7 +640,7 @@ public class Main extends Application {
 		tmpList.add(sQ3U);
 		IEdge eCQU = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(1005, 295));
 		graph.addEdge(eCQU);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sU = new Summit("sU", 330);
 		graph.addSummit(sQ1U);
@@ -649,7 +653,7 @@ public class Main extends Application {
 		tmpList.add(sU);
 		IEdge eCUQ = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(1005, 415));
 		graph.addEdge(eCUQ);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sTV = new Summit("sTV", 15);
 		ISummit sTW = new Summit("sTW", 15);
@@ -660,7 +664,7 @@ public class Main extends Application {
 		tmpList.add(sTW);
 		IEdge eITVW = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1205, 240));
 		graph.addEdge(eITVW);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sV = new Summit("sV", 32);
 		ISummit sVW = new Summit("sVW", 10);
@@ -671,7 +675,7 @@ public class Main extends Application {
 		tmpList.add(sVW);
 		IEdge eIVTW = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1200, 245));
 		graph.addEdge(eIVTW);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sW = new Summit("sW", 148);
 		graph.addSummit(sW);
@@ -680,7 +684,7 @@ public class Main extends Application {
 		tmpList.add(sVW);
 		IEdge eIWTV = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1210, 245));
 		graph.addEdge(eIWTV);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sV1X = new Summit("sV1X", 180);
 		ISummit sV2X = new Summit("sV2X", 120);
@@ -694,7 +698,7 @@ public class Main extends Application {
 		tmpList.add(sV3X);
 		IEdge eCVX = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(1168, 245));
 		graph.addEdge(eCVX);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sX = new Summit("sX", 5);
 		graph.addSummit(sX);
@@ -704,12 +708,12 @@ public class Main extends Application {
 		tmpList.add(sV3X);
 		IEdge eCXV = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(1048, 245));
 		graph.addEdge(eCXV);
-		
+
 		tmpList = new TreeSet<>();
 		tmpList.add(sX);
-		IEdge endX = new Edge(1, tmpList, EdgeType.INTERSECTION, new Coordinates(1043,  245));
+		IEdge endX = new Edge(1, tmpList, EdgeType.INTERSECTION, new Coordinates(1043, 245));
 		graph.addEdge(endX);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sWY = new Summit("sWY", 10);
 		ISummit sWZ = new Summit("sWZ", 15);
@@ -720,7 +724,7 @@ public class Main extends Application {
 		tmpList.add(sWZ);
 		IEdge eIWYZ = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1358, 245));
 		graph.addEdge(eIWYZ);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sY = new Summit("sY", 5);
 		ISummit sYZ = new Summit("sYZ", 15);
@@ -731,7 +735,7 @@ public class Main extends Application {
 		tmpList.add(sWY);
 		IEdge eIYWZ = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1368, 245));
 		graph.addEdge(eIYWZ);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sZ = new Summit("sZ", 165);
 		graph.addSummit(sZ);
@@ -740,12 +744,12 @@ public class Main extends Application {
 		tmpList.add(sYZ);
 		IEdge eIZWY = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1363, 250));
 		graph.addEdge(eIZWY);
-		
+
 		tmpList = new TreeSet<>();
 		tmpList.add(sY);
 		IEdge endY = new Edge(1, tmpList, EdgeType.INTERSECTION, new Coordinates(1373, 245));
 		graph.addEdge(endY);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sLAB = new Summit("sLAB", 10);
 		ISummit sLAA = new Summit("sLAA", 15);
@@ -756,18 +760,19 @@ public class Main extends Application {
 		tmpList.add(sLAB);
 		IEdge eILAAAB = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(10, 515));
 		graph.addEdge(eILAAAB);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAA = new Summit("sAA", 78);
 		ISummit sAAAB = new Summit("sAAAB", 15);
 		graph.addSummit(sAA);
-		graph.addSummit(sAAAB);;
+		graph.addSummit(sAAAB);
+		;
 		tmpList.add(sLAA);
 		tmpList.add(sAA);
 		tmpList.add(sAAAB);
 		IEdge eIAALAB = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(15, 520));
 		graph.addEdge(eIAALAB);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAB = new Summit("sAB", 45);
 		graph.addSummit(sAB);
@@ -776,7 +781,7 @@ public class Main extends Application {
 		tmpList.add(sAAAB);
 		IEdge eIABLAA = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(10, 525));
 		graph.addEdge(eIABLAA);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAA1AC = new Summit("sAA1AC", 180);
 		ISummit sAA2AC = new Summit("sAA2AC", 120);
@@ -790,7 +795,7 @@ public class Main extends Application {
 		tmpList.add(sAA3AC);
 		IEdge eCAAAC = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(88, 520));
 		graph.addEdge(eCAAAC);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAC = new Summit("sAC", 78);
 		graph.addSummit(sAC);
@@ -800,7 +805,7 @@ public class Main extends Application {
 		tmpList.add(sAA3AC);
 		IEdge eCACAA = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(208, 520));
 		graph.addEdge(eCACAA);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sNAC = new Summit("sNAC", 15);
 		ISummit sACAD = new Summit("sACAD", 10);
@@ -811,7 +816,7 @@ public class Main extends Application {
 		tmpList.add(sAC);
 		IEdge eIACNAD = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(286, 520));
 		graph.addEdge(eIACNAD);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sNAD = new Summit("sNAD", 15);
 		graph.addSummit(sNAD);
@@ -820,7 +825,7 @@ public class Main extends Application {
 		tmpList.add(sNAC);
 		IEdge eINACAD = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(291, 515));
 		graph.addEdge(eINACAD);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAD = new Summit("sAD", 91);
 		graph.addSummit(sAD);
@@ -829,7 +834,7 @@ public class Main extends Application {
 		tmpList.add(sACAD);
 		IEdge eIADNAC = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(296, 520));
 		graph.addEdge(eIADNAC);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAD1AE = new Summit("sAD1AE", 180);
 		ISummit sAD2AE = new Summit("sAD2AE", 120);
@@ -843,7 +848,7 @@ public class Main extends Application {
 		tmpList.add(sAD);
 		IEdge eCADAE = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(335, 520));
 		graph.addEdge(eCADAE);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAE = new Summit("sAE", 200);
 		graph.addSummit(sAE);
@@ -853,7 +858,7 @@ public class Main extends Application {
 		tmpList.add(sAD3AE);
 		IEdge eCAEAD = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(455, 520));
 		graph.addEdge(eCAEAD);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sUAF = new Summit("sUAF", 15);
 		ISummit sUAG = new Summit("sUAG", 15);
@@ -864,7 +869,7 @@ public class Main extends Application {
 		tmpList.add(sUAG);
 		IEdge eIUAFAG = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1085, 515));
 		graph.addEdge(eIUAFAG);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAF = new Summit("sAF", 91);
 		ISummit sAFAG = new Summit("sAFAG", 10);
@@ -875,7 +880,7 @@ public class Main extends Application {
 		tmpList.add(sAFAG);
 		IEdge eIAFUAG = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1080, 520));
 		graph.addEdge(eIAFUAG);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAG = new Summit("sAG", 78);
 		graph.addSummit(sAG);
@@ -884,7 +889,7 @@ public class Main extends Application {
 		tmpList.add(sAFAG);
 		IEdge eIAGFAF = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1090, 520));
 		graph.addEdge(eIAGFAF);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAF1AH = new Summit("sAF1AH", 180);
 		ISummit sAF2AH = new Summit("sAF2AH", 120);
@@ -898,7 +903,7 @@ public class Main extends Application {
 		tmpList.add(sAF3AH);
 		IEdge eCAFAH = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(994, 520));
 		graph.addEdge(eCAFAH);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAH = new Summit("sAH", 200);
 		graph.addSummit(sAH);
@@ -908,7 +913,7 @@ public class Main extends Application {
 		tmpList.add(sAF3AH);
 		IEdge eCAHAF = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(874, 520));
 		graph.addEdge(eCAHAF);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAG1AI = new Summit("sAG1AI", 180);
 		ISummit sAG2AI = new Summit("sAG2AI", 120);
@@ -922,7 +927,7 @@ public class Main extends Application {
 		tmpList.add(sAG3AI);
 		IEdge eCAGAI = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(1168, 520));
 		graph.addEdge(eCAGAI);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAI = new Summit("sAI", 78);
 		graph.addSummit(sAI);
@@ -932,7 +937,7 @@ public class Main extends Application {
 		tmpList.add(sAG3AI);
 		IEdge eCAIAG = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(1288, 520));
 		graph.addEdge(eCAIAG);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sZAI = new Summit("sZAI", 15);
 		ISummit sZAJ = new Summit("sZAJ", 10);
@@ -943,7 +948,7 @@ public class Main extends Application {
 		tmpList.add(sZ);
 		IEdge eIZAIAJ = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1363, 515));
 		graph.addEdge(eIZAIAJ);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAIAJ = new Summit("sAIAJ", 15);
 		graph.addSummit(sAIAJ);
@@ -952,7 +957,7 @@ public class Main extends Application {
 		tmpList.add(sAIAJ);
 		IEdge eIAIZAJ = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1358, 520));
 		graph.addEdge(eIAIZAJ);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAJ = new Summit("sAJ", 45);
 		graph.addSummit(sAJ);
@@ -961,7 +966,7 @@ public class Main extends Application {
 		tmpList.add(sZAJ);
 		IEdge eIAJZAI = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1363, 525));
 		graph.addEdge(eIAJZAI);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAB1AK = new Summit("sAB1AK", 180);
 		ISummit sAB2AK = new Summit("sAB2AK", 120);
@@ -975,7 +980,7 @@ public class Main extends Application {
 		tmpList.add(sAB);
 		IEdge eCABAK = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(10, 570));
 		graph.addEdge(eCABAK);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAK = new Summit("sAK", 360);
 		graph.addSummit(sAK);
@@ -985,7 +990,7 @@ public class Main extends Application {
 		tmpList.add(sAB3AK);
 		IEdge eCAKAB = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(10, 690));
 		graph.addEdge(eCAKAB);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAE1AK = new Summit("sAE1AK", 180);
 		ISummit sAE2AK = new Summit("sAE2AK", 120);
@@ -999,7 +1004,7 @@ public class Main extends Application {
 		tmpList.add(sAK);
 		IEdge eCAKAE = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(325, 690));
 		graph.addEdge(eCAKAE);
-		
+
 		tmpList = new TreeSet<>();
 		tmpList.add(sAE1AK);
 		tmpList.add(sAE2AK);
@@ -1007,7 +1012,7 @@ public class Main extends Application {
 		tmpList.add(sAE);
 		IEdge eCAEAK = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(445, 690));
 		graph.addEdge(eCAEAK);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAH1AL = new Summit("sAH1AL", 180);
 		ISummit sAH2AL = new Summit("sAH2AL", 120);
@@ -1021,7 +1026,7 @@ public class Main extends Application {
 		tmpList.add(sAH);
 		IEdge eCAHAL = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(874, 690));
 		graph.addEdge(eCAHAL);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAL = new Summit("sAL", 360);
 		graph.addSummit(sAL);
@@ -1031,7 +1036,7 @@ public class Main extends Application {
 		tmpList.add(sAH3AL);
 		IEdge eCALAH = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(994, 690));
 		graph.addEdge(eCALAH);
-		
+
 		tmpList = new TreeSet<>();
 		ISummit sAJ1AL = new Summit("sAJ1AL", 180);
 		ISummit sAJ2AL = new Summit("sAJ2AL", 120);
@@ -1045,7 +1050,7 @@ public class Main extends Application {
 		tmpList.add(sAL);
 		IEdge eCALAJ = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(1363, 690));
 		graph.addEdge(eCALAJ);
-		
+
 		tmpList = new TreeSet<>();
 		tmpList.add(sAJ);
 		tmpList.add(sAJ1AL);
@@ -1149,52 +1154,19 @@ public class Main extends Application {
 		}
 		return c;
 	}
-	
-	private boolean asSameEnds(ISummit s1, ISummit s2) {
+
+	public static boolean asSameEnds(ISummit s1, ISummit s2) {
 		IEdge[] e1 = s1.getEnds();
 		IEdge[] e2 = s2.getEnds();
 		return ((e1[0].equals(e2[0]) && e1[1].equals(e2[1])) || (e1[0].equals(e2[1]) && e1[1].equals(e2[0])));
 	}
-	
-	private void printCross(IEdge e1, IEdge e2) {
-		if (! false) {// TODO : already printed
-			for (ISummit s0: e1.getSummits()) {
-				for (ISummit s1: e2.getSummits()) {
-					if (!s0.equals(s1) && asSameEnds(s0, s1)) {
-						printCrosses(s0);
-					}
-				}
-			}
-		}
-	}
 
-	private void printSummit(ISummit s) {
-		IEdge[] e = s.getEnds();
-		Line l = new Line();
-		l.setStartX(e[0].getCoordinates().getX());
-		l.setStartY(e[0].getCoordinates().getY());
-		l.setEndX(e[1].getCoordinates().getX());
-		l.setEndY(e[1].getCoordinates().getY());
-		if (s.isObjective())
-			l.setStroke(Color.RED);
-		else
-			l.setStroke(Color.WHITE);
-		l.setStrokeWidth(2);
-		root.getChildren().add(l);
-		
-		// Case of a cross
-		if (e[0].getType().equals(e[1].getType()) && e[0].getType().equals(EdgeType.CROSS)) {
-			printCross(e[0], e[1]);
-		}
-		summitRepresentation.put(s, l);
-	}
-
-	private Double abs(Double x) {
+	public static Double abs(Double x) {
 		if (x < 0)
 			return -x;
 		return x;
 	}
-	
+
 	private void printCrosses(ISummit s) {
 		IEdge[] e = s.getEnds();
 		Arc s12 = new Arc();
@@ -1217,6 +1189,37 @@ public class Main extends Application {
 		s12.setLength(360);
 
 		root.getChildren().add(s12);
+	}
+
+	private void printCross(IEdge e1, IEdge e2) {
+		for (ISummit s0 : e1.getSummits()) {
+			for (ISummit s1 : e2.getSummits()) {
+				if (!s0.equals(s1) && asSameEnds(s0, s1)) {
+					printCrosses(s0);
+				}
+			}
+		}
+	}
+
+	private void printSummit(ISummit s) {
+		IEdge[] e = s.getEnds();
+		Line l = new Line();
+		l.setStartX(e[0].getCoordinates().getX());
+		l.setStartY(e[0].getCoordinates().getY());
+		l.setEndX(e[1].getCoordinates().getX());
+		l.setEndY(e[1].getCoordinates().getY());
+		if (s.isObjective())
+			l.setStroke(Color.RED);
+		else
+			l.setStroke(Color.WHITE);
+		l.setStrokeWidth(2);
+		root.getChildren().add(l);
+
+		// Case of a cross
+		if (e[0].getType().equals(e[1].getType()) && e[0].getType().equals(EdgeType.CROSS)) {
+			printCross(e[0], e[1]);
+		}
+		summitRepresentation.put(s, l);
 	}
 
 	private void printGraph() {

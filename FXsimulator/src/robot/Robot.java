@@ -9,12 +9,14 @@ import ch.makery.address.Main;
 import javafx.animation.PathTransition;
 import javafx.animation.StrokeTransition;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcTo;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.util.Duration;
 import map.Coordinates;
+import map.EdgeType;
 import map.IEdge;
 import map.ISummit;
 
@@ -66,6 +68,22 @@ public class Robot implements IRobot {
 		coordinates.setX(nextEdge.getCoordinates().getX());
 		coordinates.setY(nextEdge.getCoordinates().getY());
 	}
+	
+	// WARNING : if the third summit (by alphabetic order) is the shorter
+	// this will not work
+	private boolean isExternalCurve() {
+		IEdge e[] = currentSummit.getEnds();
+		if (e[0].getType().equals(e[1].getType()) && e[0].getType().equals(EdgeType.CROSS)) {
+			for (ISummit s0 : e[0].getSummits()) {
+				for (ISummit s1 : e[1].getSummits()) {
+					if (!s0.equals(s1) && Main.asSameEnds(s0, s1)) {
+						return (s0.getLength() <= currentSummit.getLength() && s1.getLength() <= currentSummit.getLength());
+					}
+				}
+			}
+		}
+		return false;
+	}
 
 	@Override
 	public Runnable run() {
@@ -87,7 +105,7 @@ public class Robot implements IRobot {
 
 			// Define the transition delay and duration
 			pathTransition.setDelay(Duration.millis(cumulateDuration));
-			duration = 1 * (currentSummit.getLength());
+			duration = 10 * (currentSummit.getLength());
 			if (duration == 0)
 				duration = 1;
 			pathTransition.setDuration(Duration.millis(duration));
@@ -96,21 +114,35 @@ public class Robot implements IRobot {
 			// Define the end coordinates and the shape of the movement
 
 			envolveCoordinates();
-			path.getElements().add(new LineTo(coordinates.getX(), coordinates.getY()));
-			
+			if (isExternalCurve()) {
+				IEdge[] e = currentSummit.getEnds();
+				ArcTo arc = new ArcTo();
+				arc.setX(coordinates.getX());
+				arc.setY(coordinates.getY());
+				if (e[1].getCoordinates().getX() - e[0].getCoordinates().getX() != 0) {
+					arc.setRadiusX(Main.abs(e[1].getCoordinates().getX() - e[0].getCoordinates().getX()) / 2);
+					arc.setRadiusY(20);
+				} else {
+					arc.setRadiusX(20);
+					arc.setRadiusY(Main.abs(e[1].getCoordinates().getY() - e[0].getCoordinates().getY()) / 2);
+				}
+				path.getElements().add(arc);
+			} else
+				path.getElements().add(new LineTo(coordinates.getX(), coordinates.getY()));
 
 			// When the robot arrives on the next edge, we choose the next direction
 			if (Main.objectives.contains(currentSummit)) {
 				Main.objectives.remove(currentSummit);
-		    	currentSummit.setObjective(false);
-		    	StrokeTransition changeSummitColor = new StrokeTransition(Duration.ONE, main.getLine(currentSummit), Color.RED, Color.WHITE);
-		    	changeSummitColor.setDelay(Duration.millis(cumulateDuration));
-		    	changeSummitColor.play();
+				currentSummit.setObjective(false);
+				StrokeTransition changeSummitColor = new StrokeTransition(Duration.ONE, main.getLine(currentSummit),
+						Color.RED, Color.WHITE);
+				changeSummitColor.setDelay(Duration.millis(cumulateDuration));
+				changeSummitColor.play();
 			}
 			pathTransition.play();
 			chooseDirection();
 		}
-		return(null);
+		return (null);
 	}
 
 	@Override

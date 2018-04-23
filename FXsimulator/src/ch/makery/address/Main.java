@@ -738,7 +738,7 @@ public class Main extends Application {
 		tmpList.add(sZ);
 		tmpList.add(sWZ);
 		tmpList.add(sYZ);
-		IEdge eIZWY = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1363, 245));
+		IEdge eIZWY = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(1363, 250));
 		graph.addEdge(eIZWY);
 		
 		tmpList = new TreeSet<>();
@@ -754,7 +754,7 @@ public class Main extends Application {
 		tmpList.add(sL);
 		tmpList.add(sLAA);
 		tmpList.add(sLAB);
-		IEdge eILAAAB = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(80, 515));
+		IEdge eILAAAB = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(10, 515));
 		graph.addEdge(eILAAAB);
 		
 		tmpList = new TreeSet<>();
@@ -765,7 +765,7 @@ public class Main extends Application {
 		tmpList.add(sLAA);
 		tmpList.add(sAA);
 		tmpList.add(sAAAB);
-		IEdge eIAALAB = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(85, 520));
+		IEdge eIAALAB = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(15, 520));
 		graph.addEdge(eIAALAB);
 		
 		tmpList = new TreeSet<>();
@@ -774,7 +774,7 @@ public class Main extends Application {
 		tmpList.add(sAB);
 		tmpList.add(sLAB);
 		tmpList.add(sAAAB);
-		IEdge eIABLAA = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(80, 525));
+		IEdge eIABLAA = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(10, 525));
 		graph.addEdge(eIABLAA);
 		
 		tmpList = new TreeSet<>();
@@ -788,7 +788,7 @@ public class Main extends Application {
 		tmpList.add(sAA1AC);
 		tmpList.add(sAA2AC);
 		tmpList.add(sAA3AC);
-		IEdge eCAAAC = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(158, 520));
+		IEdge eCAAAC = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(88, 520));
 		graph.addEdge(eCAAAC);
 		
 		tmpList = new TreeSet<>();
@@ -798,7 +798,7 @@ public class Main extends Application {
 		tmpList.add(sAA1AC);
 		tmpList.add(sAA2AC);
 		tmpList.add(sAA3AC);
-		IEdge eCACAA = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(278, 520));
+		IEdge eCACAA = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(208, 520));
 		graph.addEdge(eCACAA);
 		
 		tmpList = new TreeSet<>();
@@ -809,7 +809,7 @@ public class Main extends Application {
 		tmpList.add(sNAC);
 		tmpList.add(sACAD);
 		tmpList.add(sAC);
-		IEdge eIACNAD = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(234, 520));
+		IEdge eIACNAD = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(286, 520));
 		graph.addEdge(eIACNAD);
 		
 		tmpList = new TreeSet<>();
@@ -818,7 +818,7 @@ public class Main extends Application {
 		tmpList.add(sN);
 		tmpList.add(sNAD);
 		tmpList.add(sNAC);
-		IEdge eINACAD = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(239, 515));
+		IEdge eINACAD = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(291, 515));
 		graph.addEdge(eINACAD);
 		
 		tmpList = new TreeSet<>();
@@ -827,7 +827,7 @@ public class Main extends Application {
 		tmpList.add(sAD);
 		tmpList.add(sNAD);
 		tmpList.add(sACAD);
-		IEdge eIADNAC = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(244, 520));
+		IEdge eIADNAC = new Edge(3, tmpList, EdgeType.INTERSECTION, new Coordinates(296, 520));
 		graph.addEdge(eIADNAC);
 		
 		tmpList = new TreeSet<>();
@@ -1149,8 +1149,26 @@ public class Main extends Application {
 		}
 		return c;
 	}
+	
+	private boolean asSameEnds(ISummit s1, ISummit s2) {
+		IEdge[] e1 = s1.getEnds();
+		IEdge[] e2 = s2.getEnds();
+		return ((e1[0].equals(e2[0]) && e1[1].equals(e2[1])) || (e1[0].equals(e2[1]) && e1[1].equals(e2[0])));
+	}
+	
+	private void printCross(IEdge e1, IEdge e2) {
+		if (! false) {// TODO : already printed
+			for (ISummit s0: e1.getSummits()) {
+				for (ISummit s1: e2.getSummits()) {
+					if (!s0.equals(s1) && asSameEnds(s0, s1)) {
+						printCrosses(s0);
+					}
+				}
+			}
+		}
+	}
 
-	public void printSummit(ISummit s) {
+	private void printSummit(ISummit s) {
 		IEdge[] e = s.getEnds();
 		Line l = new Line();
 		l.setStartX(e[0].getCoordinates().getX());
@@ -1163,23 +1181,31 @@ public class Main extends Application {
 			l.setStroke(Color.WHITE);
 		l.setStrokeWidth(2);
 		root.getChildren().add(l);
+		
+		// Case of a cross
 		if (e[0].getType().equals(e[1].getType()) && e[0].getType().equals(EdgeType.CROSS)) {
-			printCrosses(s);
+			printCross(e[0], e[1]);
 		}
 		summitRepresentation.put(s, l);
 	}
 
-	public void printCrosses(ISummit s) {
+	private Double abs(Double x) {
+		if (x < 0)
+			return -x;
+		return x;
+	}
+	
+	private void printCrosses(ISummit s) {
 		IEdge[] e = s.getEnds();
 		Arc s12 = new Arc();
 		s12.setCenterX((e[0].getCoordinates().getX() + e[1].getCoordinates().getX()) / 2);
 		s12.setCenterY((e[0].getCoordinates().getY() + e[1].getCoordinates().getY()) / 2);
 		if (e[1].getCoordinates().getX() - e[0].getCoordinates().getX() != 0) {
-			s12.setRadiusX((e[1].getCoordinates().getX() - e[0].getCoordinates().getX()) / 2);
+			s12.setRadiusX(abs(e[1].getCoordinates().getX() - e[0].getCoordinates().getX()) / 2);
 			s12.setRadiusY(20);
 		} else {
 			s12.setRadiusX(20);
-			s12.setRadiusY((e[1].getCoordinates().getY() - e[0].getCoordinates().getY()) / 2);
+			s12.setRadiusY(abs(e[1].getCoordinates().getY() - e[0].getCoordinates().getY()) / 2);
 		}
 		s12.setStartAngle(0);
 
@@ -1193,7 +1219,7 @@ public class Main extends Application {
 		root.getChildren().add(s12);
 	}
 
-	public void printGraph() {
+	private void printGraph() {
 
 		// Creation of circles representing crosses and intersections
 		List<IEdge> edgeList = graph.getEdgeList();

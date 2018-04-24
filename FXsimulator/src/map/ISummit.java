@@ -7,7 +7,7 @@ public interface ISummit {
 	
 	// Getters
 	public String getName();
-	public int getLength();
+	public double getLength();
 	public IEdge[] getEnds();
 	public IEdge getOtherEnd(IEdge e);
 	

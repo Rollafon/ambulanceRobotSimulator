@@ -2,15 +2,15 @@ package map;
 
 public class Summit implements ISummit, Comparable<Summit> {
 	private String name;
-	private int length;
+	private double length;
 	private IEdge e1 = null;
 	private IEdge e2 = null;
 	private SummitColor color = SummitColor.BLACK;
 	private boolean objective = false;
 	
-	public Summit(String name, int length) {
+	public Summit(String name, double d) {
 		this.name = name;
-		this.length = length;
+		this.length = d;
 	}
 
 	@Override
@@ -19,7 +19,7 @@ public class Summit implements ISummit, Comparable<Summit> {
 	}
 
 	@Override
-	public int getLength() {
+	public double getLength() {
 		return length;
 	}
 

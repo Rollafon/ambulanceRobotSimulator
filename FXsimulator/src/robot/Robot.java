@@ -21,6 +21,8 @@ import map.IEdge;
 import map.ISummit;
 
 public class Robot implements IRobot {
+	private final double timeCoef = 10;
+	
 	private ISummit currentSummit;
 	private IEdge nextEdge;
 	private Coordinates coordinates = new Coordinates(0, 0);
@@ -105,7 +107,7 @@ public class Robot implements IRobot {
 
 			// Define the transition delay and duration
 			pathTransition.setDelay(Duration.millis(cumulateDuration));
-			duration = 10 * (currentSummit.getLength());
+			duration = timeCoef * (currentSummit.getLength());
 			if (duration == 0)
 				duration = 1;
 			pathTransition.setDuration(Duration.millis(duration));

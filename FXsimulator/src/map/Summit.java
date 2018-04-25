@@ -7,10 +7,17 @@ public class Summit implements ISummit, Comparable<Summit> {
 	private IEdge e2 = null;
 	private SummitColor color = SummitColor.BLACK;
 	private boolean objective = false;
+	private boolean hospital = false;
 	
 	public Summit(String name, double d) {
 		this.name = name;
 		this.length = d;
+	}
+	
+	public Summit(String name, double d, boolean isHospital) {
+		this.name = name;
+		this.length = d;
+		this.hospital = isHospital;
 	}
 
 	@Override
@@ -101,6 +108,11 @@ public class Summit implements ISummit, Comparable<Summit> {
 	
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public boolean isHospital() {
+		return hospital;
 	}
 	
 }

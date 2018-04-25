@@ -21,4 +21,6 @@ public interface ISummit {
 	public boolean isObjective();
 	public void setObjective(boolean b);
 	
+	public boolean isHospital();
+	
 }

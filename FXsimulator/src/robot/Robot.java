@@ -6,42 +6,39 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.Random;
 import ch.makery.address.Main;
-import javafx.animation.PathTransition;
-import javafx.animation.StrokeTransition;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.ArcTo;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.util.Duration;
 import map.Coordinates;
 import map.EdgeType;
 import map.IEdge;
 import map.ISummit;
 
-public class Robot implements IRobot {
-	private final double timeCoef = 10;
-	
+public class Robot extends Thread {
+	private final double timeCoef = 10d;
+
 	private ISummit currentSummit;
 	private IEdge nextEdge;
 	private Coordinates coordinates = new Coordinates(0, 0);
 	private List<ISummit> way = new LinkedList<>();
 	private ICommunicationChannel chat;
+	private int idRobot;
 
 	// Use to print the robot
-	Main main;
+	private Main main;
 
-	// At the beginning, the robot is placed on a summit, moving to the edge e
-	public Robot(ISummit startSummit, IEdge nextEdge, ICommunicationChannel chat, Main main) {
+	// At the beginning, the robot is placed on a summit, moving to the edge
+	// nextEdge
+	public Robot(ISummit startSummit, IEdge nextEdge, ICommunicationChannel chat, Main main, int idRobot) {
 		Random r = new Random();
 		this.currentSummit = startSummit;
-		this.nextEdge = startSummit.getEnds()[r.nextInt(2)];
+		if (nextEdge == null)
+			this.nextEdge = startSummit.getEnds()[r.nextInt(2)];
+		else
+			this.nextEdge = nextEdge;
 		this.chat = chat;
 		this.main = main;
 		Coordinates c = startSummit.getOtherEnd(this.nextEdge).getCoordinates();
 		coordinates.setX(c.getX());
 		coordinates.setY(c.getY());
+		this.idRobot = idRobot;
 	}
 
 	public void makeWay(ISummit previousSummit, IEdge currentEdge) {
@@ -70,7 +67,7 @@ public class Robot implements IRobot {
 		coordinates.setX(nextEdge.getCoordinates().getX());
 		coordinates.setY(nextEdge.getCoordinates().getY());
 	}
-	
+
 	// WARNING : if the third summit (by alphabetic order) is the shorter
 	// this will not work
 	private boolean isExternalCurve() {
@@ -79,7 +76,8 @@ public class Robot implements IRobot {
 			for (ISummit s0 : e[0].getSummits()) {
 				for (ISummit s1 : e[1].getSummits()) {
 					if (!s0.equals(s1) && Main.asSameEnds(s0, s1)) {
-						return (s0.getLength() <= currentSummit.getLength() && s1.getLength() <= currentSummit.getLength());
+						return (s0.getLength() <= currentSummit.getLength()
+								&& s1.getLength() <= currentSummit.getLength());
 					}
 				}
 			}
@@ -88,68 +86,46 @@ public class Robot implements IRobot {
 	}
 
 	@Override
-	public Runnable run() {
-
-		// Create a circle and print it on the graphic window
-		Circle c = main.initPrintRobot(coordinates);
-
-		double duration = 0;
-		double cumulateDuration = 0;
+	public void run() {
+		double duration = 0d;
+		//double cumulateDuration = 0;
+		Coordinates oldC = new Coordinates(0d, 0d);
 
 		while (!Main.objectives.isEmpty()) {
-			// Initialize the transition
-			Path path = new Path();
-			path.getElements().add(new MoveTo(coordinates.getX(), coordinates.getY()));
-			PathTransition pathTransition = new PathTransition();
-			pathTransition.setPath(path);
-			pathTransition.setNode(c);
-			pathTransition.setCycleCount(1);
-
+			
 			// Define the transition delay and duration
-			pathTransition.setDelay(Duration.millis(cumulateDuration));
-			duration = timeCoef * (currentSummit.getLength());
-			if (duration == 0)
-				duration = 1;
-			pathTransition.setDuration(Duration.millis(duration));
-			cumulateDuration += duration;
+			duration = timeCoef * currentSummit.getLength();
 
 			// Define the end coordinates and the shape of the movement
-
+			oldC.setX(coordinates.getX());
+			oldC.setY(coordinates.getY());
 			envolveCoordinates();
+			
 			if (isExternalCurve()) {
-				IEdge[] e = currentSummit.getEnds();
-				ArcTo arc = new ArcTo();
-				arc.setX(coordinates.getX());
-				arc.setY(coordinates.getY());
-				if (e[1].getCoordinates().getX() - e[0].getCoordinates().getX() != 0) {
-					arc.setRadiusX(Main.abs(e[1].getCoordinates().getX() - e[0].getCoordinates().getX()) / 2);
-					arc.setRadiusY(20);
-				} else {
-					arc.setRadiusX(20);
-					arc.setRadiusY(Main.abs(e[1].getCoordinates().getY() - e[0].getCoordinates().getY()) / 2);
-				}
-				path.getElements().add(arc);
-			} else
-				path.getElements().add(new LineTo(coordinates.getX(), coordinates.getY()));
+				main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit.getLength(), false,
+						currentSummit.getEnds(), this);
+			} else {
+				main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit.getLength(), true,
+						null, this);
+			}
 
 			// When the robot arrives on the next edge, we choose the next direction
 			if (Main.objectives.contains(currentSummit)) {
 				Main.objectives.remove(currentSummit);
 				currentSummit.setObjective(false);
-				StrokeTransition changeSummitColor = new StrokeTransition(Duration.ONE, main.getLine(currentSummit),
-						Color.RED, Color.WHITE);
-				changeSummitColor.setDelay(Duration.millis(cumulateDuration));
-				changeSummitColor.play();
+				main.changeSummitColor(currentSummit, duration);
 			}
-			pathTransition.play();
 			chooseDirection();
+			try {
+				Thread.sleep((long) duration);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
-		return (null);
+		System.out.println("Robot " + idRobot + " finished.");
 	}
 
-	@Override
 	public Coordinates getCoordinates() {
 		return coordinates;
 	}
-
 }

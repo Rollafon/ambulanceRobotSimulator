@@ -1,5 +1,4 @@
 package map;
-
 public class Summit implements ISummit, Comparable<Summit> {
 	private String name;
 	private double length;

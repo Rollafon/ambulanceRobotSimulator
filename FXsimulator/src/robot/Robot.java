@@ -12,13 +12,13 @@ import map.IEdge;
 import map.ISummit;
 
 public class Robot extends Thread {
-	private final double timeCoef = 10d;
+	private final double timeCoef = 50d;
 
 	private ISummit currentSummit;
 	private IEdge nextEdge;
 	private Coordinates coordinates = new Coordinates(0, 0);
 	private List<ISummit> way = new LinkedList<>();
-	private ICommunicationChannel chat;
+	private CommunicationChannel chat;
 	private int idRobot;
 
 	// Use to print the robot
@@ -26,7 +26,7 @@ public class Robot extends Thread {
 
 	// At the beginning, the robot is placed on a summit, moving to the edge
 	// nextEdge
-	public Robot(ISummit startSummit, IEdge nextEdge, ICommunicationChannel chat, Main main, int idRobot) {
+	public Robot(ISummit startSummit, IEdge nextEdge, CommunicationChannel chat, Main main, int idRobot) {
 		Random r = new Random();
 		this.currentSummit = startSummit;
 		if (nextEdge == null)
@@ -34,6 +34,7 @@ public class Robot extends Thread {
 		else
 			this.nextEdge = nextEdge;
 		this.chat = chat;
+		chat.takePlace(new Integer(idRobot), this.currentSummit, this.nextEdge);
 		this.main = main;
 		Coordinates c = startSummit.getOtherEnd(this.nextEdge).getCoordinates();
 		coordinates.setX(c.getX());
@@ -56,8 +57,15 @@ public class Robot extends Thread {
 	}
 
 	private void chooseDirection() {
-		if (way.isEmpty())
+		chat.freePlace(new Integer(idRobot), currentSummit, nextEdge);
+		
+		do {
+			way.clear();
 			makeWay(currentSummit, nextEdge);
+		} while (chat.alreadyTaken(way.get(0), way.get(0).getOtherEnd(nextEdge))
+				|| chat.sameDestination(way.get(0), way.get(0).getOtherEnd(nextEdge)));
+		
+		chat.takePlace(new Integer(idRobot), way.get(0), way.get(0).getOtherEnd(nextEdge));
 		currentSummit = way.get(0);
 		nextEdge = currentSummit.getOtherEnd(nextEdge);
 		way.remove(0);
@@ -88,11 +96,11 @@ public class Robot extends Thread {
 	@Override
 	public void run() {
 		double duration = 0d;
-		//double cumulateDuration = 0;
+		// double cumulateDuration = 0;
 		Coordinates oldC = new Coordinates(0d, 0d);
 
 		while (!Main.objectives.isEmpty()) {
-			
+
 			// Define the transition delay and duration
 			duration = timeCoef * currentSummit.getLength();
 
@@ -100,13 +108,12 @@ public class Robot extends Thread {
 			oldC.setX(coordinates.getX());
 			oldC.setY(coordinates.getY());
 			envolveCoordinates();
-			
+
 			if (isExternalCurve()) {
 				main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit.getLength(), false,
 						currentSummit.getEnds(), this);
 			} else {
-				main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit.getLength(), true,
-						null, this);
+				main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit.getLength(), true, null, this);
 			}
 
 			// When the robot arrives on the next edge, we choose the next direction
@@ -115,12 +122,12 @@ public class Robot extends Thread {
 				currentSummit.setObjective(false);
 				main.changeSummitColor(currentSummit, duration);
 			}
-			chooseDirection();
 			try {
 				Thread.sleep((long) duration);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			chooseDirection();
 		}
 		System.out.println("Robot " + idRobot + " finished.");
 	}

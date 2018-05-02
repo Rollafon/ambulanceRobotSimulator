@@ -37,6 +37,7 @@ import map.IEdge;
 import map.IGraph;
 import map.ISummit;
 import map.Summit;
+import robot.CommunicationChannel;
 import robot.Robot;
 
 public class Main extends Application {
@@ -65,7 +66,7 @@ public class Main extends Application {
 	private IGraph graph;
 	private Group root = null;
 
-	private static final int NB_ROBOTS = 50; // There will not be NB_ROBOTS robots, but a random value between 1 and
+	private static final int NB_ROBOTS = 10; // There will not be NB_ROBOTS robots, but a random value between 1 and
 												// NB_ROBOTS
 	private Map<Robot, Circle> robotMap = new HashMap<>();
 
@@ -1135,6 +1136,7 @@ public class Main extends Application {
 		Random r = new Random();
 		List<ISummit> summitList = graph.getSummitList();
 		List<Robot> robotList = new ArrayList<>();
+		CommunicationChannel chat = new CommunicationChannel();
 		int nbSummits = summitList.size();
 		int robotListSize;
 		int i;
@@ -1160,7 +1162,7 @@ public class Main extends Application {
 		for (i = 0; i < NB_ROBOTS; i++) {
 			boolean alreadyUsed = false;
 			ISummit s = summitList.get(r.nextInt(nbSummits));
-			Robot robot = new Robot(s, null, null, this, i);
+			Robot robot = new Robot(s, null, chat, this, i);
 			robotListSize = robotList.size();
 
 			for (int j = 0; j < robotListSize && !alreadyUsed; j++) {

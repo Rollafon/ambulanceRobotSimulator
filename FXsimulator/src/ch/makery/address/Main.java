@@ -1149,7 +1149,7 @@ public class Main extends Application {
 		Scene scene = new Scene(root, xLength, yLength, Color.BLACK);
 		primaryStage.setScene(scene);
 
-		for (i = 0; i <= /*r.nextInt(nbSummits + 1) + 1*/ 100; i++) {
+		for (i = 0; i <= r.nextInt(nbSummits + 1) + 1; i++) {
 			ISummit s = summitList.get(r.nextInt(nbSummits));
 			s.setObjective(true);
 			objectives.add(s);

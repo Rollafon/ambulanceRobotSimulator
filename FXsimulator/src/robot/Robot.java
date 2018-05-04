@@ -77,9 +77,9 @@ public class Robot extends Thread {
 
 		@Override
 		public int compareTo(CostSummit o) {
-			if (summit.isObjective() && !o.summit.isObjective())
+			if (summit.isObjective() && !o.summit.isObjective() && nbVictimsInside < CAPACITY)
 				return 1;
-			if (!summit.isObjective() && o.summit.isObjective())
+			if (!summit.isObjective() && o.summit.isObjective() && nbVictimsInside < CAPACITY)
 				return -1;
 			double diff = cost - o.cost;
 			if (diff == 0d)
@@ -186,10 +186,11 @@ public class Robot extends Thread {
 			}
 
 			// When the robot arrives on the next edge, we choose the next direction
-			if (Main.objectives.contains(currentSummit)) {
+			if (Main.objectives.contains(currentSummit) && nbVictimsInside < CAPACITY) {
 				Main.objectives.remove(currentSummit);
 				currentSummit.setObjective(false);
-				main.changeSummitColor(currentSummit, duration);
+				if (!currentSummit.isHospital())
+					main.changeSummitColor(currentSummit, duration);
 				nbVictimsInside++;
 			}
 

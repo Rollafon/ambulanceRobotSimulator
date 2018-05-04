@@ -13,7 +13,7 @@ import map.IEdge;
 import map.ISummit;
 
 public class Robot extends Thread {
-	private final double timeCoef = 10d;
+	private final double timeCoef = 30d;
 	private final int CAPACITY = 2;
 
 	private ISummit currentSummit;

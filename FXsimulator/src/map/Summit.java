@@ -1,4 +1,5 @@
 package map;
+
 public class Summit implements ISummit, Comparable<Summit> {
 	private String name;
 	private double length;
@@ -7,12 +8,12 @@ public class Summit implements ISummit, Comparable<Summit> {
 	private SummitColor color = SummitColor.BLACK;
 	private boolean objective = false;
 	private boolean hospital = false;
-	
+
 	public Summit(String name, double d) {
 		this.name = name;
 		this.length = d;
 	}
-	
+
 	public Summit(String name, double d, boolean isHospital) {
 		this.name = name;
 		this.length = d;
@@ -41,7 +42,7 @@ public class Summit implements ISummit, Comparable<Summit> {
 	public void setEnd(IEdge e) {
 		if (e1 == null)
 			e1 = e;
-		else 
+		else
 			e2 = e;
 	}
 
@@ -49,7 +50,7 @@ public class Summit implements ISummit, Comparable<Summit> {
 	public IEdge getOtherEnd(IEdge e) {
 		if (e.equals(e1))
 			return e2;
-		else 
+		else
 			return e1;
 	}
 
@@ -57,11 +58,7 @@ public class Summit implements ISummit, Comparable<Summit> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		long temp;
-		temp = Double.doubleToLongBits(length);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + (objective ? 1231 : 1237);
 		return result;
 	}
 
@@ -74,14 +71,10 @@ public class Summit implements ISummit, Comparable<Summit> {
 		if (getClass() != obj.getClass())
 			return false;
 		Summit other = (Summit) obj;
-		if (Double.doubleToLongBits(length) != Double.doubleToLongBits(other.length))
-			return false;
 		if (name == null) {
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
-			return false;
-		if (objective != other.objective)
 			return false;
 		return true;
 	}
@@ -90,17 +83,17 @@ public class Summit implements ISummit, Comparable<Summit> {
 	public SummitColor getColor() {
 		return color;
 	}
-	
+
 	@Override
 	public void setColor(SummitColor c) {
 		color = c;
 	}
-	
+
 	@Override
 	public boolean isObjective() {
 		return objective;
 	}
-	
+
 	@Override
 	public void setObjective(boolean b) {
 		objective = b;
@@ -108,16 +101,9 @@ public class Summit implements ISummit, Comparable<Summit> {
 
 	@Override
 	public int compareTo(Summit o) {
-		if (objective && !o.objective)
-			return 1;
-		if (!objective && o.objective)
-			return -1;
-		double diff = length - o.length;
-		if (diff == 0d)
-			return name.compareTo(o.getName());
-		return (int) diff;
+		return name.compareTo(o.getName());
 	}
-	
+
 	public String toString() {
 		return name;
 	}
@@ -126,5 +112,5 @@ public class Summit implements ISummit, Comparable<Summit> {
 	public boolean isHospital() {
 		return hospital;
 	}
-	
+
 }

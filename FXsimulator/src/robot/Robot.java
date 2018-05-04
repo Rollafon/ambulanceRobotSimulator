@@ -3,8 +3,9 @@ package robot;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NavigableSet;
 import java.util.Random;
+import java.util.TreeSet;
+
 import ch.makery.address.Main;
 import map.Coordinates;
 import map.EdgeType;
@@ -12,7 +13,7 @@ import map.IEdge;
 import map.ISummit;
 
 public class Robot extends Thread {
-	private final double timeCoef = 50d;
+	private final double timeCoef = 10d;
 
 	private ISummit currentSummit;
 	private IEdge nextEdge;
@@ -34,7 +35,7 @@ public class Robot extends Thread {
 		else
 			this.nextEdge = nextEdge;
 		this.chat = chat;
-		chat.takePlace(new Integer(idRobot), this.currentSummit, this.nextEdge);
+		chat.takePlace(this.currentSummit, this.nextEdge);
 		this.main = main;
 		Coordinates c = startSummit.getOtherEnd(this.nextEdge).getCoordinates();
 		coordinates.setX(c.getX());
@@ -42,30 +43,95 @@ public class Robot extends Thread {
 		this.idRobot = idRobot;
 	}
 
-	public void makeWay(ISummit previousSummit, IEdge currentEdge) {
-		NavigableSet<ISummit> opportunities = currentEdge.getSummits();
-		List<ISummit> oppForRandom = new ArrayList<>();
-		Random r = new Random();
+	private class CostSummit implements Comparable<CostSummit> {
+		private double cost;
+		private CostSummit previousSummit;
+		private IEdge previousEdge;
+		private ISummit summit;
 
-		for (ISummit s : opportunities)
-			oppForRandom.add(s);
+		public CostSummit(double cost, CostSummit previousSummit, IEdge previousEdge, ISummit summit) {
+			super();
+			this.cost = cost;
+			this.previousSummit = previousSummit;
+			this.previousEdge = previousEdge;
+			this.summit = summit;
+		}
 
-		way.add(oppForRandom.get(r.nextInt(oppForRandom.size())));
-		// if (Main.objectives.contains(summitTested))
-		// Main.objectives.remove(summitTested);
-		// makeWay(summitTested, summitTested.getOtherEnd(e));
+		public double getCost() {
+			return cost;
+		}
+
+		public CostSummit getPreviousSummit() {
+			return previousSummit;
+		}
+
+		public IEdge getPreviousEdge() {
+			return previousEdge;
+		}
+
+		public ISummit getSummit() {
+			return summit;
+		}
+
+		@Override
+		public int compareTo(CostSummit o) {
+			if (summit.isObjective() && !o.summit.isObjective())
+				return 1;
+			if (!summit.isObjective() && o.summit.isObjective())
+				return -1;
+			double diff = cost - o.cost;
+			if (diff == 0d)
+				return summit.getName().compareTo(o.summit.getName());
+			return (int) diff;
+		}
+	}
+
+	private void makeWay(ISummit previousSummit, IEdge currentEdge) {
+		CostSummit summitTested;
+		IEdge nextEdge;
+		List<IEdge> seenEdges = new ArrayList<>();
+		TreeSet<CostSummit> possibilities = new TreeSet<>();
+
+		// Initialization of all the ways that are possible starting at currentEdge
+		for (ISummit s : currentEdge.getSummits()) {
+			possibilities.add(new CostSummit(s.getLength(), null, currentEdge, s));
+			seenEdges.add(currentEdge);
+		}
+
+		// While the search didn't find any victim, we extend the search to the next
+		// shorter road since the current position
+		do {
+			summitTested = possibilities.first();
+			nextEdge = summitTested.getSummit().getOtherEnd(summitTested.getPreviousEdge());
+			if (!seenEdges.contains(nextEdge)) {
+				for (ISummit s : nextEdge.getSummits()) {
+					possibilities.add(new CostSummit(s.getLength() + summitTested.getCost(),
+							summitTested, nextEdge, s));
+				}
+			}
+			possibilities.remove(summitTested);
+			seenEdges.add(nextEdge);
+		} while (!summitTested.getSummit().isObjective() && !possibilities.isEmpty());
+
+		// When the objective has been found, we rebuild the way
+		while (summitTested != null) {
+			way.add(0, summitTested.summit);
+			summitTested = summitTested.getPreviousSummit();
+		}
 	}
 
 	private void chooseDirection() {
-		chat.freePlace(new Integer(idRobot), currentSummit, nextEdge);
-		
-		do {
-			way.clear();
-			makeWay(currentSummit, nextEdge);
-		} while (chat.alreadyTaken(way.get(0), way.get(0).getOtherEnd(nextEdge))
-				|| chat.sameDestination(way.get(0), way.get(0).getOtherEnd(nextEdge)));
-		
-		chat.takePlace(new Integer(idRobot), way.get(0), way.get(0).getOtherEnd(nextEdge));
+		chat.freePlace(currentSummit, nextEdge);
+		if (way.isEmpty()) {
+			do {
+				way.clear();
+				makeWay(currentSummit, nextEdge);
+				if (way.isEmpty())
+					return;
+			} while (chat.alreadyTaken(way.get(0), way.get(0).getOtherEnd(nextEdge)));
+		}
+
+		chat.takePlace(way.get(0), way.get(0).getOtherEnd(nextEdge));
 		currentSummit = way.get(0);
 		nextEdge = currentSummit.getOtherEnd(nextEdge);
 		way.remove(0);

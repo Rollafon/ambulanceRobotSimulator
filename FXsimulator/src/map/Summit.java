@@ -53,13 +53,15 @@ public class Summit implements ISummit, Comparable<Summit> {
 			return e1;
 	}
 
-	
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(length);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + (objective ? 1231 : 1237);
 		return result;
 	}
 
@@ -72,10 +74,14 @@ public class Summit implements ISummit, Comparable<Summit> {
 		if (getClass() != obj.getClass())
 			return false;
 		Summit other = (Summit) obj;
+		if (Double.doubleToLongBits(length) != Double.doubleToLongBits(other.length))
+			return false;
 		if (name == null) {
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
+			return false;
+		if (objective != other.objective)
 			return false;
 		return true;
 	}
@@ -102,7 +108,14 @@ public class Summit implements ISummit, Comparable<Summit> {
 
 	@Override
 	public int compareTo(Summit o) {
-		return name.compareTo(o.getName());
+		if (objective && !o.objective)
+			return 1;
+		if (!objective && o.objective)
+			return -1;
+		double diff = length - o.length;
+		if (diff == 0d)
+			return name.compareTo(o.getName());
+		return (int) diff;
 	}
 	
 	public String toString() {

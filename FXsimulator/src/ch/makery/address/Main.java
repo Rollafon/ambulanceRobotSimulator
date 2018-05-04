@@ -66,7 +66,7 @@ public class Main extends Application {
 	private IGraph graph;
 	private Group root = null;
 
-	private static final int NB_ROBOTS = 1; // There will not be NB_ROBOTS robots, but a random value between 1 and
+	private static final int NB_ROBOTS = 10; // There will not be NB_ROBOTS robots, but a random value between 1 and
 												// NB_ROBOTS
 	private Map<Robot, Circle> robotMap = new HashMap<>();
 

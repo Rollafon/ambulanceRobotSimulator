@@ -14,6 +14,7 @@ import map.ISummit;
 
 public class Robot extends Thread {
 	private final double timeCoef = 10d;
+	private final int CAPACITY = 2;
 
 	private ISummit currentSummit;
 	private IEdge nextEdge;
@@ -21,6 +22,7 @@ public class Robot extends Thread {
 	private List<ISummit> way = new LinkedList<>();
 	private CommunicationChannel chat;
 	private int idRobot;
+	private int nbVictimsInside = 0;
 
 	// Use to print the robot
 	private Main main;
@@ -86,9 +88,10 @@ public class Robot extends Thread {
 		}
 	}
 
-	private void makeWay(ISummit previousSummit, IEdge currentEdge) {
+	private void makeWay(ISummit previousSummit, IEdge currentEdge, boolean searchHospital) {
 		CostSummit summitTested;
 		IEdge nextEdge;
+		boolean notFound = true;
 		List<IEdge> seenEdges = new ArrayList<>();
 		TreeSet<CostSummit> possibilities = new TreeSet<>();
 
@@ -105,13 +108,18 @@ public class Robot extends Thread {
 			nextEdge = summitTested.getSummit().getOtherEnd(summitTested.getPreviousEdge());
 			if (!seenEdges.contains(nextEdge)) {
 				for (ISummit s : nextEdge.getSummits()) {
-					possibilities.add(new CostSummit(s.getLength() + summitTested.getCost(),
-							summitTested, nextEdge, s));
+					possibilities
+							.add(new CostSummit(s.getLength() + summitTested.getCost(), summitTested, nextEdge, s));
 				}
 			}
 			possibilities.remove(summitTested);
 			seenEdges.add(nextEdge);
-		} while (!summitTested.getSummit().isObjective() && !possibilities.isEmpty());
+
+			if (searchHospital)
+				notFound = !summitTested.getSummit().isHospital();
+			else
+				notFound = !summitTested.getSummit().isObjective();
+		} while (notFound && !possibilities.isEmpty());
 
 		// When the objective has been found, we rebuild the way
 		while (summitTested != null) {
@@ -122,14 +130,9 @@ public class Robot extends Thread {
 
 	private void chooseDirection() {
 		chat.freePlace(currentSummit, nextEdge);
-		if (way.isEmpty()) {
-			do {
-				way.clear();
-				makeWay(currentSummit, nextEdge);
-				if (way.isEmpty())
-					return;
-			} while (chat.alreadyTaken(way.get(0), way.get(0).getOtherEnd(nextEdge)));
-		}
+
+		makeWay(currentSummit, nextEdge,
+				nbVictimsInside >= CAPACITY || (Main.objectives.isEmpty() && nbVictimsInside > 0));
 
 		chat.takePlace(way.get(0), way.get(0).getOtherEnd(nextEdge));
 		currentSummit = way.get(0);
@@ -165,7 +168,7 @@ public class Robot extends Thread {
 		// double cumulateDuration = 0;
 		Coordinates oldC = new Coordinates(0d, 0d);
 
-		while (!Main.objectives.isEmpty()) {
+		while (!Main.objectives.isEmpty() || nbVictimsInside > 0) {
 
 			// Define the transition delay and duration
 			duration = timeCoef * currentSummit.getLength();
@@ -187,7 +190,12 @@ public class Robot extends Thread {
 				Main.objectives.remove(currentSummit);
 				currentSummit.setObjective(false);
 				main.changeSummitColor(currentSummit, duration);
+				nbVictimsInside++;
 			}
+
+			if (currentSummit.isHospital())
+				nbVictimsInside = 0;
+
 			try {
 				Thread.sleep((long) duration);
 			} catch (InterruptedException e) {

@@ -13,7 +13,7 @@ import map.IEdge;
 import map.ISummit;
 
 public class Robot extends Thread {
-	private final double timeCoef = 30d;
+	private final double timeCoef = 20d;
 	private final int CAPACITY = 2;
 
 	private ISummit currentSummit;
@@ -88,7 +88,7 @@ public class Robot extends Thread {
 		}
 	}
 
-	private void makeWay(ISummit previousSummit, IEdge currentEdge, boolean searchHospital) {
+	private void makeWay(ISummit previousSummit, IEdge currentEdge, boolean searchHospital, ISummit summitToAvoid) {
 		CostSummit summitTested;
 		IEdge nextEdge;
 		boolean notFound = true;
@@ -97,9 +97,10 @@ public class Robot extends Thread {
 
 		// Initialization of all the ways that are possible starting at currentEdge
 		for (ISummit s : currentEdge.getSummits()) {
-			possibilities.add(new CostSummit(s.getLength(), null, currentEdge, s));
-			seenEdges.add(currentEdge);
+			if (!s.equals(summitToAvoid))
+				possibilities.add(new CostSummit(s.getLength(), null, currentEdge, s));
 		}
+		seenEdges.add(currentEdge);
 
 		// While the search didn't find any victim, we extend the search to the next
 		// shorter road since the current position
@@ -108,8 +109,9 @@ public class Robot extends Thread {
 			nextEdge = summitTested.getSummit().getOtherEnd(summitTested.getPreviousEdge());
 			if (!seenEdges.contains(nextEdge)) {
 				for (ISummit s : nextEdge.getSummits()) {
-					possibilities
-							.add(new CostSummit(s.getLength() + summitTested.getCost(), summitTested, nextEdge, s));
+					if (!s.equals(summitToAvoid))
+						possibilities
+								.add(new CostSummit(s.getLength() + summitTested.getCost(), summitTested, nextEdge, s));
 				}
 			}
 			possibilities.remove(summitTested);
@@ -130,9 +132,17 @@ public class Robot extends Thread {
 
 	private void chooseDirection() {
 		chat.freePlace(currentSummit, nextEdge);
-
 		makeWay(currentSummit, nextEdge,
-				nbVictimsInside >= CAPACITY || (Main.objectives.isEmpty() && nbVictimsInside > 0));
+					nbVictimsInside >= CAPACITY || (Main.objectives.isEmpty() && nbVictimsInside > 0), null);
+
+		// While a robot is already on the next summit, we try to get another way to
+		// avoid collision
+		while (chat.alreadyTaken(way.get(0))) {
+			ISummit s = way.get(0);
+			way.clear();
+			makeWay(currentSummit, nextEdge,
+					nbVictimsInside >= CAPACITY || (Main.objectives.isEmpty() && nbVictimsInside > 0), s);
+		}
 
 		chat.takePlace(way.get(0), way.get(0).getOtherEnd(nextEdge));
 		currentSummit = way.get(0);

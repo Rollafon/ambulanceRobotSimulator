@@ -9,10 +9,11 @@ import map.ISummit;
 
 public class CommunicationChannel {
 	private TreeMap<ISummit, List<IEdge>> summitsTaken = new TreeMap<>();
+	private List<IEdge> busyEdges = new LinkedList<>();
 
 	/* Returns true if another robot is already on the nextSummit going to the nextEdge or false otherwise */
-	public synchronized boolean alreadyTaken(ISummit nextSummit, IEdge startEdge) {
-		return (summitsTaken.containsKey(nextSummit) && summitsTaken.get(nextSummit).contains(nextSummit.getOtherEnd(startEdge)));
+	public synchronized boolean alreadyTaken(ISummit nextSummit, IEdge nextEdge) {
+		return (summitsTaken.containsKey(nextSummit) || busyEdges.contains(nextEdge));
 	}
 
 	/* Say that the previous summit is now free, and that a robot is on the currentEdge */
@@ -21,9 +22,16 @@ public class CommunicationChannel {
 		if (summitsTaken.get(oldSummit).isEmpty())
 			summitsTaken.remove(oldSummit);
 	}
+	
+	/* Say that the previous summit is now free, and that a robot is on the currentEdge */
+	public synchronized void freeEdge(IEdge e) {
+		busyEdges.remove(e);
+	}
 
 	/* Say that a robot is now on the newSummit going to the next Edge */
-	public synchronized void takePlace(ISummit newSummit, IEdge nextEdge) {
+	public synchronized void takePlace(ISummit newSummit, IEdge oldEdge, IEdge nextEdge) {
+		if (oldEdge != null)
+			busyEdges.remove(oldEdge);
 		if (!summitsTaken.containsKey(newSummit)) {
 			List<IEdge> edgeList = new LinkedList<>();
 			edgeList.add(nextEdge);
@@ -33,5 +41,6 @@ public class CommunicationChannel {
 			edgeList.add(nextEdge);
 			summitsTaken.put(newSummit, edgeList);
 		}
+		busyEdges.add(nextEdge);
 	}
 }

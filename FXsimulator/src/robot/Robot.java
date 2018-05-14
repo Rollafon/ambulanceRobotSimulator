@@ -15,7 +15,10 @@ import map.ISummit;
 
 public class Robot extends Thread {
 	private final double timeCoef = 20d;
-	private final int CAPACITY = 2;
+	private final int CAPACITY = 2; // The maximum number of victim that a robot can transport
+	private final double ESTIMATED_WAIT_TIME = 5000d; // This number is used to avoid crosses
+														// The more it will be high, the more robot will avoid to reach
+														// each other
 
 	private ISummit currentSummit;
 	private IEdge nextEdge;
@@ -38,7 +41,7 @@ public class Robot extends Thread {
 		else
 			this.nextEdge = nextEdge;
 		this.chat = chat;
-		chat.takePlace(this.currentSummit, this.nextEdge);
+		chat.takePlace(this.currentSummit, null, this.nextEdge);
 		this.main = main;
 		Coordinates c = startSummit.getOtherEnd(this.nextEdge).getCoordinates();
 		coordinates.setX(c.getX());
@@ -78,10 +81,6 @@ public class Robot extends Thread {
 
 		@Override
 		public int compareTo(CostSummit o) {
-			if (summit.isObjective() && !o.summit.isObjective() && nbVictimsInside < CAPACITY)
-				return 1;
-			if (!summit.isObjective() && o.summit.isObjective() && nbVictimsInside < CAPACITY)
-				return -1;
 			double diff = cost - o.cost;
 			if (diff == 0d)
 				return summit.getName().compareTo(o.summit.getName());
@@ -105,8 +104,8 @@ public class Robot extends Thread {
 		}
 		seenEdges.add(nextEdge);
 
-		// While the search didn't find any victim, we extend the search to the next
-		// shorter road since the current position
+		// While the search didn't find any victim (or hospital), we extend the search
+		// to the next shorter road since the current position
 		do {
 			summitTested = possibilities.first();
 			nextNextEdge = summitTested.getSummit().getOtherEnd(summitTested.getPreviousEdge());
@@ -116,12 +115,12 @@ public class Robot extends Thread {
 						possibilities.add(
 								new CostSummit(s.getLength() + summitTested.getCost(), summitTested, nextNextEdge, s));
 					else
-						possibilities.add(new CostSummit(s.getLength() + summitTested.getCost() + 100d, summitTested,
-								nextNextEdge, s));
+						possibilities.add(new CostSummit(s.getLength() + summitTested.getCost() + ESTIMATED_WAIT_TIME,
+								summitTested, nextNextEdge, s));
 				}
+				seenEdges.add(nextNextEdge);
 			}
-			possibilities.remove(summitTested);
-			seenEdges.add(nextNextEdge);
+			possibilities.remove(possibilities.first());
 
 			if (searchHospital)
 				notFound = !summitTested.getSummit().isHospital();
@@ -144,7 +143,7 @@ public class Robot extends Thread {
 			makeWay(nbVictimsInside >= CAPACITY || (Main.objectives.isEmpty() && nbVictimsInside > 0));
 		} while (way.isEmpty() || chat.alreadyTaken(way.get(0), way.get(0).getOtherEnd(nextEdge)));
 
-		chat.takePlace(way.get(0), way.get(0).getOtherEnd(nextEdge));
+		chat.takePlace(way.get(0), nextEdge, way.get(0).getOtherEnd(nextEdge));
 		currentSummit = way.get(0);
 		nextEdge = currentSummit.getOtherEnd(nextEdge);
 		way.remove(0);
@@ -172,10 +171,42 @@ public class Robot extends Thread {
 		return false;
 	}
 
+	private void arriveEdge(double duration) {
+		if (Main.objectives.contains(currentSummit) && nbVictimsInside < CAPACITY) {
+			Main.objectives.remove(currentSummit);
+			currentSummit.setObjective(false);
+			if (!currentSummit.isHospital())
+				main.changeSummitColor(currentSummit, duration);
+			nbVictimsInside++;
+		}
+
+		if (currentSummit.isHospital())
+			nbVictimsInside = 0;
+
+		try {
+			Thread.sleep((long) duration);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void endRobot() {
+		Coordinates oldC = new Coordinates(0, 0);
+		IEdge previousEdge = nextEdge;
+		nextEdge = new Edge(0, new TreeSet<>(), null, new Coordinates(idRobot * 10 + 5, 5));
+		oldC.setX(coordinates.getX());
+		oldC.setY(coordinates.getY());
+		envolveCoordinates();
+		main.printRobotMovement(0d, 100d * timeCoef, oldC, coordinates, currentSummit.getLength(), true, null, this);
+		chat.freePlace(currentSummit, previousEdge);
+		chat.freeEdge(previousEdge);
+
+		System.out.println("Robot " + idRobot + " finished.");
+	}
+
 	@Override
 	public void run() {
 		double duration = 0d;
-		// double cumulateDuration = 0;
 		Coordinates oldC = new Coordinates(0d, 0d);
 
 		while (!Main.objectives.isEmpty() || nbVictimsInside > 0) {
@@ -196,33 +227,12 @@ public class Robot extends Thread {
 			}
 
 			// When the robot arrives on the next edge, we choose the next direction
-			if (Main.objectives.contains(currentSummit) && nbVictimsInside < CAPACITY) {
-				Main.objectives.remove(currentSummit);
-				currentSummit.setObjective(false);
-				if (!currentSummit.isHospital())
-					main.changeSummitColor(currentSummit, duration);
-				nbVictimsInside++;
-			}
+			arriveEdge(duration);
 
-			if (currentSummit.isHospital())
-				nbVictimsInside = 0;
-
-			try {
-				Thread.sleep((long) duration);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 			chooseDirection();
 		}
-		IEdge previousEdge = nextEdge;
-		nextEdge = new Edge(0, new TreeSet<>(), null, new Coordinates(idRobot * 10 + 5, 5));
-		oldC.setX(coordinates.getX());
-		oldC.setY(coordinates.getY());
-		envolveCoordinates();
-		main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit.getLength(), true, null, this);
-		chat.freePlace(currentSummit, previousEdge);
 
-		System.out.println("Robot " + idRobot + " finished.");
+		endRobot();
 	}
 
 	public Coordinates getCoordinates() {

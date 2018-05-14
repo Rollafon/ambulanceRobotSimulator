@@ -89,34 +89,39 @@ public class Robot extends Thread {
 		}
 	}
 
-	private void makeWay(ISummit previousSummit, IEdge currentEdge, boolean searchHospital, ISummit summitToAvoid) {
+	private void makeWay(boolean searchHospital) {
 		CostSummit summitTested;
-		IEdge nextEdge;
+		IEdge nextNextEdge;
 		boolean notFound = true;
 		List<IEdge> seenEdges = new ArrayList<>();
 		TreeSet<CostSummit> possibilities = new TreeSet<>();
 
 		// Initialization of all the ways that are possible starting at currentEdge
-		for (ISummit s : currentEdge.getSummits()) {
-			if (!s.equals(summitToAvoid))
-				possibilities.add(new CostSummit(s.getLength(), null, currentEdge, s));
+		while (possibilities.isEmpty()) {
+			for (ISummit s : nextEdge.getSummits()) {
+				if (!chat.alreadyTaken(s, s.getOtherEnd(nextEdge)))
+					possibilities.add(new CostSummit(s.getLength(), null, nextEdge, s));
+			}
 		}
-		seenEdges.add(currentEdge);
+		seenEdges.add(nextEdge);
 
 		// While the search didn't find any victim, we extend the search to the next
 		// shorter road since the current position
 		do {
 			summitTested = possibilities.first();
-			nextEdge = summitTested.getSummit().getOtherEnd(summitTested.getPreviousEdge());
-			if (!seenEdges.contains(nextEdge)) {
-				for (ISummit s : nextEdge.getSummits()) {
-					if (!s.equals(summitToAvoid))
-						possibilities
-								.add(new CostSummit(s.getLength() + summitTested.getCost(), summitTested, nextEdge, s));
+			nextNextEdge = summitTested.getSummit().getOtherEnd(summitTested.getPreviousEdge());
+			if (!seenEdges.contains(nextNextEdge)) {
+				for (ISummit s : nextNextEdge.getSummits()) {
+					if (!chat.alreadyTaken(s, s.getOtherEnd(nextNextEdge)))
+						possibilities.add(
+								new CostSummit(s.getLength() + summitTested.getCost(), summitTested, nextNextEdge, s));
+					else
+						possibilities.add(new CostSummit(s.getLength() + summitTested.getCost() + 100d, summitTested,
+								nextNextEdge, s));
 				}
 			}
 			possibilities.remove(summitTested);
-			seenEdges.add(nextEdge);
+			seenEdges.add(nextNextEdge);
 
 			if (searchHospital)
 				notFound = !summitTested.getSummit().isHospital();
@@ -133,17 +138,11 @@ public class Robot extends Thread {
 
 	private void chooseDirection() {
 		chat.freePlace(currentSummit, nextEdge);
-		makeWay(currentSummit, nextEdge,
-					nbVictimsInside >= CAPACITY || (Main.objectives.isEmpty() && nbVictimsInside > 0), null);
 
-		// While a robot is already on the next summit, we try to get another way to
-		// avoid collision
-		while (chat.alreadyTaken(way.get(0), way.get(0).getOtherEnd(nextEdge))) {
-			ISummit s = way.get(0);
+		do {
 			way.clear();
-			makeWay(currentSummit, nextEdge,
-					nbVictimsInside >= CAPACITY || (Main.objectives.isEmpty() && nbVictimsInside > 0), s);
-		}
+			makeWay(nbVictimsInside >= CAPACITY || (Main.objectives.isEmpty() && nbVictimsInside > 0));
+		} while (way.isEmpty() || chat.alreadyTaken(way.get(0), way.get(0).getOtherEnd(nextEdge)));
 
 		chat.takePlace(way.get(0), way.get(0).getOtherEnd(nextEdge));
 		currentSummit = way.get(0);
@@ -216,11 +215,13 @@ public class Robot extends Thread {
 			chooseDirection();
 		}
 		IEdge previousEdge = nextEdge;
-		nextEdge = new Edge(0, new TreeSet<>(), null, new Coordinates(idRobot * 10 + 10, 5));
+		nextEdge = new Edge(0, new TreeSet<>(), null, new Coordinates(idRobot * 10 + 5, 5));
+		oldC.setX(coordinates.getX());
+		oldC.setY(coordinates.getY());
 		envolveCoordinates();
 		main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit.getLength(), true, null, this);
 		chat.freePlace(currentSummit, previousEdge);
-		
+
 		System.out.println("Robot " + idRobot + " finished.");
 	}
 

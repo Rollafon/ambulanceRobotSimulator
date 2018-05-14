@@ -11,8 +11,8 @@ public class CommunicationChannel {
 	private TreeMap<ISummit, List<IEdge>> summitsTaken = new TreeMap<>();
 
 	/* Returns true if another robot is already on the nextSummit going to the nextEdge or false otherwise */
-	public synchronized boolean alreadyTaken(ISummit nextSummit) {
-		return (summitsTaken.containsKey(nextSummit));
+	public synchronized boolean alreadyTaken(ISummit nextSummit, IEdge startEdge) {
+		return (summitsTaken.containsKey(nextSummit) && summitsTaken.get(nextSummit).contains(nextSummit.getOtherEnd(startEdge)));
 	}
 
 	/* Say that the previous summit is now free, and that a robot is on the currentEdge */

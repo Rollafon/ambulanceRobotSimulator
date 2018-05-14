@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 import ch.makery.address.Main;
 import map.Coordinates;
+import map.Edge;
 import map.EdgeType;
 import map.IEdge;
 import map.ISummit;
@@ -137,7 +138,7 @@ public class Robot extends Thread {
 
 		// While a robot is already on the next summit, we try to get another way to
 		// avoid collision
-		while (chat.alreadyTaken(way.get(0))) {
+		while (chat.alreadyTaken(way.get(0), way.get(0).getOtherEnd(nextEdge))) {
 			ISummit s = way.get(0);
 			way.clear();
 			makeWay(currentSummit, nextEdge,
@@ -214,6 +215,12 @@ public class Robot extends Thread {
 			}
 			chooseDirection();
 		}
+		IEdge previousEdge = nextEdge;
+		nextEdge = new Edge(0, new TreeSet<>(), null, new Coordinates(idRobot * 10 + 10, 5));
+		envolveCoordinates();
+		main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit.getLength(), true, null, this);
+		chat.freePlace(currentSummit, previousEdge);
+		
 		System.out.println("Robot " + idRobot + " finished.");
 	}
 

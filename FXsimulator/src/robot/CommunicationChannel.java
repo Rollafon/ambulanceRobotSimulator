@@ -11,9 +11,13 @@ public class CommunicationChannel {
 	private TreeMap<ISummit, List<IEdge>> summitsTaken = new TreeMap<>();
 	private List<IEdge> busyEdges = new LinkedList<>();
 
-	/* Returns true if another robot is already on the nextSummit going to the nextEdge or false otherwise */
-	public synchronized boolean alreadyTaken(ISummit nextSummit, IEdge nextEdge) {
-		return (summitsTaken.containsKey(nextSummit) || busyEdges.contains(nextEdge));
+	/* Returns true if another robot is already on the nextSummit or false otherwise */
+	public synchronized boolean alreadyTaken(ISummit nextSummit) {
+		return (summitsTaken.containsKey(nextSummit));
+	}
+	
+	public synchronized boolean hasSameDestination(IEdge nextEdge) {
+		return (busyEdges.contains(nextEdge));
 	}
 
 	/* Say that the previous summit is now free, and that a robot is on the currentEdge */

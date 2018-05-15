@@ -16,7 +16,7 @@ import map.ISummit;
 public class Robot extends Thread {
 	private final double timeCoef = 20d;
 	private final int CAPACITY = 2; // The maximum number of victim that a robot can transport
-	private final double ESTIMATED_WAIT_TIME = 5000d; // This number is used to avoid crosses
+	private final double ESTIMATED_WAIT_TIME = 50000d; // This number is used to avoid crosses
 														// The more it will be high, the more robot will avoid to reach
 														// each other
 
@@ -99,7 +99,7 @@ public class Robot extends Thread {
 		// Initialization of all the ways that are possible starting at currentEdge
 		while (possibilities.isEmpty()) {
 			for (ISummit s : nextEdge.getSummits()) {
-				if (!chat.alreadyTaken(s, s.getOtherEnd(nextEdge)))
+				if (!chat.alreadyTaken(s) && !chat.hasSameDestination(s.getOtherEnd(nextEdge)))
 					possibilities.add(new CostSummit(s.getLength(), null, nextEdge, s));
 			}
 		}
@@ -112,7 +112,7 @@ public class Robot extends Thread {
 			nextNextEdge = summitTested.getSummit().getOtherEnd(summitTested.getPreviousEdge());
 			if (!seenEdges.contains(nextNextEdge)) {
 				for (ISummit s : nextNextEdge.getSummits()) {
-					if (!chat.alreadyTaken(s, s.getOtherEnd(nextNextEdge)))
+					if (!chat.alreadyTaken(s))
 						possibilities.add(
 								new CostSummit(s.getLength() + summitTested.getCost(), summitTested, nextNextEdge, s));
 					else
@@ -152,7 +152,7 @@ public class Robot extends Thread {
 		do {
 			way.clear();
 			makeWay(nbVictimsInside >= CAPACITY || (Main.objectives.isEmpty() && nbVictimsInside > 0));
-		} while (way.isEmpty() || chat.alreadyTaken(way.get(0), way.get(0).getOtherEnd(nextEdge)));
+		} while (way.isEmpty() || chat.alreadyTaken(way.get(0)) || chat.hasSameDestination(way.get(0).getOtherEnd(nextEdge)));
 
 		chat.takePlace(way.get(0), nextEdge, way.get(0).getOtherEnd(nextEdge));
 		currentSummit = way.get(0);
@@ -221,7 +221,7 @@ public class Robot extends Thread {
 		double duration = 0d;
 		Coordinates oldC = new Coordinates(0d, 0d);
 
-		while (!Main.objectives.isEmpty() || nbVictimsInside > 0) {
+		while (!Main.objectives.isEmpty() || nbVictimsInside > 0 || localObjective.isObjective()) {
 
 			// Define the transition delay and duration
 			duration = timeCoef * currentSummit.getLength();

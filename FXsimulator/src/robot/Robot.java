@@ -27,6 +27,7 @@ public class Robot extends Thread {
 	private CommunicationChannel chat;
 	private int idRobot;
 	private int nbVictimsInside = 0;
+	private ISummit localObjective = null;
 
 	// Use to print the robot
 	private Main main;
@@ -128,6 +129,16 @@ public class Robot extends Thread {
 				notFound = !summitTested.getSummit().isObjective();
 		} while (notFound && !possibilities.isEmpty());
 
+		if (!summitTested.getSummit().equals(localObjective) || localObjective == null) {
+			if (localObjective != null && localObjective.isObjective())
+				Main.objectives.add(localObjective);
+
+			if (!summitTested.getSummit().isHospital()) {
+				localObjective = summitTested.getSummit();
+				Main.objectives.remove(localObjective);
+			}
+		}
+
 		// When the objective has been found, we rebuild the way
 		while (summitTested != null) {
 			way.add(0, summitTested.summit);
@@ -172,8 +183,9 @@ public class Robot extends Thread {
 	}
 
 	private void arriveEdge(double duration) {
-		if (Main.objectives.contains(currentSummit) && nbVictimsInside < CAPACITY) {
-			Main.objectives.remove(currentSummit);
+		if (currentSummit.isObjective() && nbVictimsInside < CAPACITY) {
+			if (Main.objectives.contains(currentSummit))
+				Main.objectives.remove(currentSummit);
 			currentSummit.setObjective(false);
 			if (!currentSummit.isHospital())
 				main.changeSummitColor(currentSummit, duration);
@@ -228,7 +240,6 @@ public class Robot extends Thread {
 
 			// When the robot arrives on the next edge, we choose the next direction
 			arriveEdge(duration);
-
 			chooseDirection();
 		}
 

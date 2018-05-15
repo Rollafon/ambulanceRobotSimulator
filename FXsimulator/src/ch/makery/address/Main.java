@@ -1097,7 +1097,7 @@ public class Main extends Application {
 		tmpList.add(sAJ3AL);
 		IEdge eCAJAL = new Edge(4, tmpList, EdgeType.CROSS, new Coordinates(calcX(202d), calcY(133d)));
 		graph.addEdge(eCAJAL);
-	}
+	} 
 
 	/**
 	 * Initializes the root layout.
@@ -1149,7 +1149,7 @@ public class Main extends Application {
 		Scene scene = new Scene(root, xLength, yLength, Color.BLACK);
 		primaryStage.setScene(scene);
 
-		for (i = 0; i <= r.nextInt(nbSummits + 1) + 1; i++) {
+		for (i = 0; i <= 200/*r.nextInt(nbSummits + 1) + 1*/; i++) {
 			ISummit s = summitList.get(r.nextInt(nbSummits));
 			s.setObjective(true);
 			objectives.add(s);

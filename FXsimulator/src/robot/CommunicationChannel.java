@@ -16,7 +16,7 @@ public class CommunicationChannel {
 		return (summitsTaken.containsKey(nextSummit));
 	}
 	
-	public synchronized boolean hasSameDestination(IEdge nextEdge) {
+	public synchronized boolean hasForDestination(IEdge nextEdge) {
 		return (busyEdges.contains(nextEdge));
 	}
 

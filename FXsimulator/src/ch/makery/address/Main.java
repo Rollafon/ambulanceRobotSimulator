@@ -27,6 +27,9 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import map.Coordinates;
@@ -58,6 +61,27 @@ public class Main extends Application {
 
 	public static NavigableSet<ISummit> objectives = new TreeSet<>();
 
+	private class RobotReprensentation {
+		private Circle circle;
+		private Text text;
+		
+		public RobotReprensentation(Circle circle, Text text) {
+			this.circle = circle;
+			this.text = text;
+		}
+		
+		public Circle getCircle() {
+			return circle;
+		}
+		
+		public Text getText() {
+			return text;
+		}
+	}
+	
+	private static final int NB_ROBOTS = 2; // There will not be NB_ROBOTS robots, but a random value between 1 and
+												// NB_ROBOTS
+	private Map<Robot, RobotReprensentation> robotMap = new HashMap<>();
 	private Map<ISummit, Line> summitRepresentation = new TreeMap<>();
 
 	private Stage primaryStage;
@@ -65,10 +89,6 @@ public class Main extends Application {
 
 	private IGraph graph;
 	private Group root = null;
-
-	private static final int NB_ROBOTS = 10; // There will not be NB_ROBOTS robots, but a random value between 1 and
-												// NB_ROBOTS
-	private Map<Robot, Circle> robotMap = new HashMap<>();
 
 	private double calcX(double proportion) {
 		return (xMin + (proportion / proportionMaxX) * xLength);
@@ -1171,9 +1191,8 @@ public class Main extends Application {
 				}
 			}
 			if (!alreadyUsed) {
-				Circle c = initPrintRobot(robot.getCoordinates());
+				initPrintRobot(robot);
 				robotList.add(robot);
-				robotMap.put(robot, c);
 			}
 		}
 
@@ -1293,30 +1312,48 @@ public class Main extends Application {
 		}
 	}
 
-	public Circle initPrintRobot(Coordinates coord) {
+	public void initPrintRobot(Robot robot) {
 		Circle circle = new Circle();
-		circle.setCenterX(coord.getX());
-		circle.setCenterY(coord.getY());
+		circle.setCenterX(robot.getCoordinates().getX());
+		circle.setCenterY(robot.getCoordinates().getY());
 		circle.setRadius(5);
 		circle.setStrokeWidth(1);
 		circle.setFill(Color.CHARTREUSE);
 		circle.setStroke(Color.GREEN);
 		root.getChildren().add(circle);
 
-		return circle;
+		Text text = new Text();
+		text.setFill(Color.RED);
+		text.setX(robot.getCoordinates().getX());
+		text.setY(robot.getCoordinates().getY());
+		text.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 15));
+		root.getChildren().add(text);
+		
+		robotMap.put(robot, new RobotReprensentation(circle, text));
 	}
 
-	public void printRobotMovement(double start, double length, Coordinates oldC, Coordinates newC, double summitLength,
-			boolean isALine, IEdge[] ends, Robot robot) {
+	public void printRobotMovement(double start, double length, Coordinates oldC, Coordinates newC, ISummit currentSummit,
+			boolean isALine, Robot robot, String objective) {
+		IEdge ends[] = currentSummit.getEnds();
+		
 		// Initialize the transition
 		Path path = new Path();
 		path.getElements().add(new MoveTo(oldC.getX(), oldC.getY()));
 		PathTransition pathTransition = new PathTransition();
 		pathTransition.setPath(path);
-		pathTransition.setNode(robotMap.get(robot));
+		pathTransition.setNode(robotMap.get(robot).getCircle());
 		pathTransition.setCycleCount(1);
 		pathTransition.setDelay(Duration.millis(start));
 		pathTransition.setDuration(Duration.millis(length));
+		
+		PathTransition pathTransitionCopy = new PathTransition();
+		pathTransitionCopy.setPath(path);
+		pathTransitionCopy.setNode(robotMap.get(robot).getText());
+		pathTransitionCopy.setCycleCount(1);
+		pathTransitionCopy.setDelay(Duration.millis(start));
+		pathTransitionCopy.setDuration(Duration.millis(length));
+		
+		robotMap.get(robot).getText().setText(objective);
 		
 		if (!isALine) {
 			ArcTo arc = new ArcTo();
@@ -1333,6 +1370,7 @@ public class Main extends Application {
 		} else
 			path.getElements().add(new LineTo(newC.getX(), newC.getY()));
 		pathTransition.play();
+		pathTransitionCopy.play();
 	}
 
 	public void changeSummitColor(ISummit currentSummit, double delay) {

@@ -99,6 +99,7 @@ public class Robot extends Thread {
 
 		// Initialization of all the ways that are possible starting at currentEdge
 		while (possibilities.isEmpty()) {
+			
 			for (ISummit s : nextEdge.getSummits()) {
 				if (!chat.alreadyTaken(s) && !chat.hasForDestination(s.getOtherEnd(nextEdge)))
 					possibilities.add(new CostSummit(s.getLength(), null, nextEdge, s));
@@ -127,16 +128,16 @@ public class Robot extends Thread {
 			if (searchHospital)
 				found = summitTested.getSummit().isHospital();
 			else
-				found = Main.objectives.contains(summitTested.getSummit()) || (summitTested.getSummit().equals(localObjective) && localObjective.isObjective());
+				found = Main.objectives.contains(summitTested.getSummit())
+						|| (summitTested.getSummit().equals(localObjective) && localObjective.isObjective());
 		} while (!found && !possibilities.isEmpty());
 
 		if (!summitTested.getSummit().equals(localObjective) || localObjective == null) {
 			if (localObjective != null && localObjective.isObjective())
 				Main.objectives.add(localObjective);
 			localObjective = summitTested.getSummit();
-			if (!localObjective.isHospital()) {
+			if (!localObjective.isHospital())
 				Main.objectives.remove(localObjective);
-			}
 		}
 
 		// When the objective has been found, we rebuild the way
@@ -151,7 +152,8 @@ public class Robot extends Thread {
 
 		do {
 			way.clear();
-			makeWay(nbVictimsInside >= CAPACITY || (Main.objectives.isEmpty() && nbVictimsInside > 0));
+			makeWay(nbVictimsInside >= CAPACITY || 
+					(Main.objectives.isEmpty() && nbVictimsInside > 0 && ! localObjective.isObjective()));
 		} while (way.isEmpty() || chat.alreadyTaken(way.get(0)) || chat.hasForDestination(way.get(0).getOtherEnd(nextEdge)));
 
 		chat.takePlace(way.get(0), nextEdge, way.get(0).getOtherEnd(nextEdge));
@@ -173,8 +175,7 @@ public class Robot extends Thread {
 			for (ISummit s0 : e[0].getSummits()) {
 				for (ISummit s1 : e[1].getSummits()) {
 					if (!s0.equals(s1) && Main.asSameEnds(s0, s1)) {
-						return (s0.getLength() <= s.getLength()
-								&& s1.getLength() <= s.getLength());
+						return (s0.getLength() <= s.getLength() && s1.getLength() <= s.getLength());
 					}
 				}
 			}
@@ -224,7 +225,7 @@ public class Robot extends Thread {
 		while (!Main.objectives.isEmpty() || nbVictimsInside > 0 || localObjective.isObjective()) {
 
 			chooseDirection();
-			
+
 			// Define the transition delay and duration
 			duration = timeCoef * currentSummit.getLength();
 
@@ -234,9 +235,11 @@ public class Robot extends Thread {
 			envolveCoordinates();
 
 			if (isExternalCurve(currentSummit)) {
-				main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit, false, this, localObjective.getName());
+				main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit, false, this,
+						localObjective.getName());
 			} else {
-				main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit, true, this, localObjective.getName());
+				main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit, true, this,
+						localObjective.getName() + " - " + nbVictimsInside + "/" + CAPACITY);
 			}
 
 			// When the robot arrives on the next edge, we choose the next direction
@@ -249,7 +252,7 @@ public class Robot extends Thread {
 	public Coordinates getCoordinates() {
 		return coordinates;
 	}
-	
+
 	public int getIdRobot() {
 		return idRobot;
 	}

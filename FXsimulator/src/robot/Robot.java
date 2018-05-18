@@ -12,11 +12,12 @@ import map.Edge;
 import map.EdgeType;
 import map.IEdge;
 import map.ISummit;
+import map.Summit;
 
 public class Robot extends Thread {
 	private final double timeCoef = 20d;
 	private final int CAPACITY = 2; // The maximum number of victim that a robot can transport
-	private final double ESTIMATED_WAIT_TIME = 100d; // This number is used to avoid crosses
+	private final double ESTIMATED_WAIT_TIME = 10000d; // This number is used to avoid crosses
 														// The more it will be high, the more robot will avoid to reach
 														// each other
 
@@ -44,7 +45,7 @@ public class Robot extends Thread {
 		this.chat = chat;
 		chat.takePlace(this.currentSummit, null, this.nextEdge);
 		this.main = main;
-		Coordinates c = startSummit.getOtherEnd(this.nextEdge).getCoordinates();
+		Coordinates c = this.nextEdge.getCoordinates();
 		coordinates.setX(c.getX());
 		coordinates.setY(c.getY());
 		this.idRobot = idRobot;
@@ -126,17 +127,16 @@ public class Robot extends Thread {
 			if (searchHospital)
 				found = summitTested.getSummit().isHospital();
 			else
-				found = Main.objectives.contains(summitTested.getSummit());
+				found = Main.objectives.contains(summitTested.getSummit()) || (summitTested.getSummit().equals(localObjective) && localObjective.isObjective());
 		} while (!found && !possibilities.isEmpty());
 
 		if (!summitTested.getSummit().equals(localObjective) || localObjective == null) {
 			if (localObjective != null && localObjective.isObjective())
 				Main.objectives.add(localObjective);
-
-			if (!summitTested.getSummit().isHospital() && localObjective != null) {
+			localObjective = summitTested.getSummit();
+			if (!localObjective.isHospital()) {
 				Main.objectives.remove(localObjective);
 			}
-			localObjective = summitTested.getSummit();
 		}
 
 		// When the objective has been found, we rebuild the way
@@ -209,7 +209,7 @@ public class Robot extends Thread {
 		oldC.setX(coordinates.getX());
 		oldC.setY(coordinates.getY());
 		envolveCoordinates();
-		main.printRobotMovement(0d, 100d * timeCoef, oldC, coordinates, currentSummit, true, this, "");
+		main.printRobotMovement(0d, 100d * timeCoef, oldC, coordinates, new Summit("end", 0), true, this, "");
 		chat.freePlace(currentSummit, previousEdge);
 		chat.freeEdge(previousEdge);
 
@@ -220,8 +220,6 @@ public class Robot extends Thread {
 	public void run() {
 		double duration = 0d;
 		Coordinates oldC = new Coordinates(0d, 0d);
-		
-		nextEdge = currentSummit.getOtherEnd(nextEdge);
 
 		while (!Main.objectives.isEmpty() || nbVictimsInside > 0 || localObjective.isObjective()) {
 

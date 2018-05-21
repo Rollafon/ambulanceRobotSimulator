@@ -118,8 +118,13 @@ public class Robot extends Thread {
 						possibilities.add(
 								new CostSummit(s.getLength() + summitTested.getCost(), summitTested, nextNextEdge, s));
 					else
-						possibilities.add(new CostSummit(s.getLength() + summitTested.getCost() + ESTIMATED_WAIT_TIME,
+						if (chat.hasForDestination(nextNextEdge)) {
+							possibilities.add(new CostSummit(s.getLength() + summitTested.getCost() + ESTIMATED_WAIT_TIME,
 								summitTested, nextNextEdge, s));
+						} else {
+							possibilities.add(new CostSummit(s.getLength() + summitTested.getCost() + ESTIMATED_WAIT_TIME/summitTested.getCost(),
+									summitTested, nextNextEdge, s));
+						}
 				}
 				seenEdges.add(nextNextEdge);
 			}
@@ -222,7 +227,7 @@ public class Robot extends Thread {
 		double duration = 0d;
 		Coordinates oldC = new Coordinates(0d, 0d);
 
-		while (!Main.objectives.isEmpty() || nbVictimsInside > 0 || localObjective.isObjective()) {
+		while (!Main.objectives.isEmpty() || nbVictimsInside > 0 || (localObjective != null && localObjective.isObjective())) {
 
 			chooseDirection();
 

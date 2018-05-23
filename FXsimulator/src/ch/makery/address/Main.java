@@ -79,7 +79,7 @@ public class Main extends Application {
 		}
 	}
 	
-	private static final int NB_ROBOTS = 2; // There will not be NB_ROBOTS robots, but a random value between 1 and
+	private static final int NB_ROBOTS = 4; // There will not be NB_ROBOTS robots, but a random value between 1 and
 												// NB_ROBOTS
 	private Map<Robot, RobotReprensentation> robotMap = new HashMap<>();
 	private Map<ISummit, Line> summitRepresentation = new TreeMap<>();

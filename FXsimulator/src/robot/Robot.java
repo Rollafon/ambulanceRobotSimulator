@@ -97,7 +97,6 @@ public class Robot extends Thread {
 
 		// Initialization of all the ways that are possible starting at currentEdge
 		while (possibilities.isEmpty()) {
-
 			for (ISummit s : nextEdge.getSummits()) {
 				if (!chat.alreadyTaken(s, s.getOtherEnd(nextEdge)) && !chat.hasForDestination(s.getOtherEnd(nextEdge)))
 					possibilities.add(new CostSummit(s.getLength(), null, nextEdge, s));
@@ -219,13 +218,14 @@ public class Robot extends Thread {
 			boolean neighbouringRobot = false;
 			nearSummits.addAll(nextEdge.getSummits());
 			for (ISummit s : nextEdge.getSummits()) {
-				if ((chat.alreadyTaken(s, s.getOtherEnd(nextEdge)) && !s.equals(currentSummit)) || chat.hasForDestination(s.getOtherEnd(nextEdge))) {
+				if ((chat.alreadyTaken(s, s.getOtherEnd(nextEdge)) && !s.equals(currentSummit))
+						|| chat.hasForDestination(s.getOtherEnd(nextEdge))) {
 					neighbouringRobot = true;
 					nearSummits.remove(s);
 				}
 			}
 
-			if (!nearSummits.isEmpty() && neighbouringRobot) {
+			if (!nearSummits.isEmpty() && neighbouringRobot || currentSummit.isHospital()) {
 				chat.freePlace(currentSummit, nextEdge);
 				IEdge previousEdge = nextEdge;
 				currentSummit = nearSummits.get(r.nextInt(nearSummits.size()));
@@ -280,6 +280,7 @@ public class Robot extends Thread {
 			// When the robot arrives on the next edge, we choose the next direction
 			arriveEdge(duration);
 		}
+		chat.freeEdge(nextEdge);
 		endRobot();
 	}
 

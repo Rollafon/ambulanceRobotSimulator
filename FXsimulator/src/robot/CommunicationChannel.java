@@ -35,13 +35,16 @@ public class CommunicationChannel {
 			}
 			
 			if (nbOccur(nearSummits, summit) == 2) {
+				System.out.println("summit " + summit.getName());
 				boolean alreadyUsed = false;
 				nearSummits.remove(summit);
 				nearSummits.remove(summit);
 				
 				for (ISummit s: nearSummits) {
-					if (nbOccur(nearSummits, s) == 2)
+					if (nbOccur(nearSummits, s) == 2) {
+						System.out.println("summit " + summit.getName());
 						alreadyUsed = alreadyUsed || summitsTaken.containsKey(s);
+					}
 				}
 				return alreadyUsed;
 			}

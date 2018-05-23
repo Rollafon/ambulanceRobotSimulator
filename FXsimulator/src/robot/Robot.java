@@ -8,11 +8,9 @@ import java.util.TreeSet;
 
 import ch.makery.address.Main;
 import map.Coordinates;
-import map.Edge;
 import map.EdgeType;
 import map.IEdge;
 import map.ISummit;
-import map.Summit;
 
 public class Robot extends Thread {
 	private final double timeCoef = 20d;
@@ -99,7 +97,7 @@ public class Robot extends Thread {
 
 		// Initialization of all the ways that are possible starting at currentEdge
 		while (possibilities.isEmpty()) {
-			
+
 			for (ISummit s : nextEdge.getSummits()) {
 				if (!chat.alreadyTaken(s) && !chat.hasForDestination(s.getOtherEnd(nextEdge)))
 					possibilities.add(new CostSummit(s.getLength(), null, nextEdge, s));
@@ -117,14 +115,14 @@ public class Robot extends Thread {
 					if (!chat.alreadyTaken(s))
 						possibilities.add(
 								new CostSummit(s.getLength() + summitTested.getCost(), summitTested, nextNextEdge, s));
-					else
-						if (chat.hasForDestination(nextNextEdge)) {
-							possibilities.add(new CostSummit(s.getLength() + summitTested.getCost() + ESTIMATED_WAIT_TIME,
+					else if (chat.hasForDestination(nextNextEdge)) {
+						possibilities.add(new CostSummit(s.getLength() + summitTested.getCost() + ESTIMATED_WAIT_TIME,
 								summitTested, nextNextEdge, s));
-						} else {
-							possibilities.add(new CostSummit(s.getLength() + summitTested.getCost() + ESTIMATED_WAIT_TIME/summitTested.getCost(),
-									summitTested, nextNextEdge, s));
-						}
+					} else {
+						possibilities.add(new CostSummit(
+								s.getLength() + summitTested.getCost() + ESTIMATED_WAIT_TIME / summitTested.getCost(),
+								summitTested, nextNextEdge, s));
+					}
 				}
 				seenEdges.add(nextNextEdge);
 			}
@@ -157,9 +155,10 @@ public class Robot extends Thread {
 
 		do {
 			way.clear();
-			makeWay(nbVictimsInside >= CAPACITY || 
-					(Main.objectives.isEmpty() && nbVictimsInside > 0 && ! localObjective.isObjective()));
-		} while (way.isEmpty() || chat.alreadyTaken(way.get(0)) || chat.hasForDestination(way.get(0).getOtherEnd(nextEdge)));
+			makeWay(nbVictimsInside >= CAPACITY
+					|| (Main.objectives.isEmpty() && nbVictimsInside > 0 && !localObjective.isObjective()));
+		} while (way.isEmpty() || chat.alreadyTaken(way.get(0))
+				|| chat.hasForDestination(way.get(0).getOtherEnd(nextEdge)));
 
 		chat.takePlace(way.get(0), nextEdge, way.get(0).getOtherEnd(nextEdge));
 		currentSummit = way.get(0);
@@ -209,15 +208,45 @@ public class Robot extends Thread {
 	}
 
 	private void endRobot() {
+		Random r = new Random();
 		Coordinates oldC = new Coordinates(0, 0);
-		IEdge previousEdge = nextEdge;
-		nextEdge = new Edge(0, new TreeSet<>(), null, new Coordinates(idRobot * 10 + 5, 5));
-		oldC.setX(coordinates.getX());
-		oldC.setY(coordinates.getY());
-		envolveCoordinates();
-		main.printRobotMovement(0d, 100d * timeCoef, oldC, coordinates, new Summit("end", 0), true, this, "");
-		chat.freePlace(currentSummit, previousEdge);
-		chat.freeEdge(previousEdge);
+		List<ISummit> nearSummits = new LinkedList<>();
+
+		main.robotFinished();
+
+		// While the server says it is not finished, the robot will avoid the others
+		while (!Main.isFinished) {
+			boolean neighbouringRobot = false;
+			nearSummits.addAll(nextEdge.getSummits());
+			for (ISummit s : nextEdge.getSummits()) {
+				if ((chat.alreadyTaken(s) && !s.equals(currentSummit)) || chat.hasForDestination(s.getOtherEnd(nextEdge))) {
+					neighbouringRobot = true;
+					nearSummits.remove(s);
+				}
+			}
+
+			if (!nearSummits.isEmpty() && neighbouringRobot) {
+				chat.freePlace(currentSummit, nextEdge);
+				IEdge previousEdge = nextEdge;
+				currentSummit = nearSummits.get(r.nextInt(nearSummits.size()));
+				nextEdge = currentSummit.getOtherEnd(previousEdge);
+				double duration = currentSummit.getLength() * timeCoef;
+				oldC.setX(coordinates.getX());
+				oldC.setY(coordinates.getY());
+				envolveCoordinates();
+				if (isExternalCurve(currentSummit))
+					main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit, false, this, "");
+				else
+					main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit, true, this, "");
+				chat.takePlace(currentSummit, previousEdge, nextEdge);
+				try {
+					Thread.sleep((long) duration);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			nearSummits.clear();
+		}
 
 		System.out.println("Robot " + idRobot + " finished.");
 	}
@@ -227,7 +256,8 @@ public class Robot extends Thread {
 		double duration = 0d;
 		Coordinates oldC = new Coordinates(0d, 0d);
 
-		while (!Main.objectives.isEmpty() || nbVictimsInside > 0 || (localObjective != null && localObjective.isObjective())) {
+		while (!Main.objectives.isEmpty() || nbVictimsInside > 0
+				|| (localObjective != null && localObjective.isObjective())) {
 
 			chooseDirection();
 
@@ -241,7 +271,7 @@ public class Robot extends Thread {
 
 			if (isExternalCurve(currentSummit)) {
 				main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit, false, this,
-						localObjective.getName());
+						localObjective.getName() + " - " + nbVictimsInside + "/" + CAPACITY);
 			} else {
 				main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit, true, this,
 						localObjective.getName() + " - " + nbVictimsInside + "/" + CAPACITY);
@@ -250,7 +280,6 @@ public class Robot extends Thread {
 			// When the robot arrives on the next edge, we choose the next direction
 			arriveEdge(duration);
 		}
-
 		endRobot();
 	}
 

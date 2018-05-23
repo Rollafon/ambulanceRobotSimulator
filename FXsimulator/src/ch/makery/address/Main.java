@@ -89,6 +89,9 @@ public class Main extends Application {
 
 	private IGraph graph;
 	private Group root = null;
+	
+	public static boolean isFinished = false;
+	private int nbRobotsAlive;
 
 	private double calcX(double proportion) {
 		return (xMin + (proportion / proportionMaxX) * xLength);
@@ -108,7 +111,7 @@ public class Main extends Application {
 		NavigableSet<ISummit> tmpList = new TreeSet<>();
 
 		ISummit s1 = new Summit("s1", 3d * minLengthCross);
-		ISummit s112 = new Summit("s111", maxLengthCross);
+		ISummit s112 = new Summit("s112", maxLengthCross);
 		ISummit s122 = new Summit("s122", minLengthCross);
 		ISummit s132 = new Summit("s132", maxLengthCross);
 		graph.addSummit(s1);
@@ -1200,6 +1203,7 @@ public class Main extends Application {
 		for (i = 0; i < robotListSize; i++) {
 			robotList.get(i).start();
 		}
+		nbRobotsAlive = robotListSize;
 	}
 
 	public static void main(String[] args) {
@@ -1378,5 +1382,11 @@ public class Main extends Application {
 				Color.RED, Color.WHITE);
 		changeSummitColor.setDelay(Duration.millis(delay));
 		changeSummitColor.play();
+	}
+	
+	public synchronized void robotFinished() {
+		nbRobotsAlive--;
+		if (nbRobotsAlive == 0)
+			isFinished = true;
 	}
 }

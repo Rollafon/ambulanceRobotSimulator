@@ -13,7 +13,7 @@ import map.IEdge;
 import map.ISummit;
 
 public class Robot extends Thread {
-	private final double timeCoef = 20d;
+	private final double timeCoef = 30d;
 	private final int CAPACITY = 2; // The maximum number of victim that a robot can transport
 	private final double ESTIMATED_WAIT_TIME = 10000d; // This number is used to avoid crosses
 														// The more it will be high, the more robot will avoid to reach
@@ -99,7 +99,7 @@ public class Robot extends Thread {
 		while (possibilities.isEmpty()) {
 
 			for (ISummit s : nextEdge.getSummits()) {
-				if (!chat.alreadyTaken(s) && !chat.hasForDestination(s.getOtherEnd(nextEdge)))
+				if (!chat.alreadyTaken(s, s.getOtherEnd(nextEdge)) && !chat.hasForDestination(s.getOtherEnd(nextEdge)))
 					possibilities.add(new CostSummit(s.getLength(), null, nextEdge, s));
 			}
 		}
@@ -112,7 +112,7 @@ public class Robot extends Thread {
 			nextNextEdge = summitTested.getSummit().getOtherEnd(summitTested.getPreviousEdge());
 			if (!seenEdges.contains(nextNextEdge)) {
 				for (ISummit s : nextNextEdge.getSummits()) {
-					if (!chat.alreadyTaken(s))
+					if (!chat.alreadyTaken(s, s.getOtherEnd(nextNextEdge)))
 						possibilities.add(
 								new CostSummit(s.getLength() + summitTested.getCost(), summitTested, nextNextEdge, s));
 					else if (chat.hasForDestination(nextNextEdge)) {
@@ -157,7 +157,7 @@ public class Robot extends Thread {
 			way.clear();
 			makeWay(nbVictimsInside >= CAPACITY
 					|| (Main.objectives.isEmpty() && nbVictimsInside > 0 && !localObjective.isObjective()));
-		} while (way.isEmpty() || chat.alreadyTaken(way.get(0))
+		} while (way.isEmpty() || chat.alreadyTaken(way.get(0), way.get(0).getOtherEnd(nextEdge))
 				|| chat.hasForDestination(way.get(0).getOtherEnd(nextEdge)));
 
 		chat.takePlace(way.get(0), nextEdge, way.get(0).getOtherEnd(nextEdge));
@@ -219,7 +219,7 @@ public class Robot extends Thread {
 			boolean neighbouringRobot = false;
 			nearSummits.addAll(nextEdge.getSummits());
 			for (ISummit s : nextEdge.getSummits()) {
-				if ((chat.alreadyTaken(s) && !s.equals(currentSummit)) || chat.hasForDestination(s.getOtherEnd(nextEdge))) {
+				if ((chat.alreadyTaken(s, s.getOtherEnd(nextEdge)) && !s.equals(currentSummit)) || chat.hasForDestination(s.getOtherEnd(nextEdge))) {
 					neighbouringRobot = true;
 					nearSummits.remove(s);
 				}

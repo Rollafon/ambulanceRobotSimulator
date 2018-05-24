@@ -53,11 +53,11 @@ public class Main extends Application {
 	private final double proportionMaxX = 207d;
 	private final double proportionMaxY = 157d;
 
-	private final double minLengthPerSummit = 10d;
-	private final double minLengthCross = 8d * minLengthPerSummit;
-	private final double maxLengthCross = minLengthCross + minLengthCross / 2d;
-	private final double minLengthIntersection = 4d * minLengthPerSummit;
-	private final double maxLengthIntersection = minLengthIntersection + minLengthIntersection / 4d;
+	public final double minLengthPerSummit = 10d;
+	public final double minLengthCross = 8d * minLengthPerSummit;
+	public final double maxLengthCross = minLengthCross + minLengthCross / 2d;
+	public final double minLengthIntersection = 4d * minLengthPerSummit;
+	public final double maxLengthIntersection = minLengthIntersection + minLengthIntersection / 4d;
 
 	public static NavigableSet<ISummit> objectives = new TreeSet<>();
 

@@ -280,7 +280,6 @@ public class Robot extends Thread {
 			// When the robot arrives on the next edge, we choose the next direction
 			arriveEdge(duration);
 		}
-		chat.freeEdge(nextEdge);
 		endRobot();
 	}
 

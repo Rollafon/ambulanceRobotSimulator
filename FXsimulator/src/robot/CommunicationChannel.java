@@ -14,7 +14,7 @@ public class CommunicationChannel {
 	/*
 	 * Returns true if another robot is already on the nextSummit or false otherwise
 	 */
-	public synchronized boolean alreadyTaken(ISummit summit, IEdge nextEdge) {
+	public synchronized boolean alreadyTaken(ISummit summit) {
 		return (summitsTaken.containsKey(summit));
 	}
 

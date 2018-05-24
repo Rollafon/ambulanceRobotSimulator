@@ -88,7 +88,7 @@ public class Robot extends Thread {
 		}
 	}
 
-	private void makeWay(boolean searchHospital) {
+	private void makeWay() {
 		CostSummit summitTested;
 		IEdge nextNextEdge;
 		boolean found = false;
@@ -98,7 +98,7 @@ public class Robot extends Thread {
 		// Initialization of all the ways that are possible starting at currentEdge
 		while (possibilities.isEmpty()) {
 			for (ISummit s : nextEdge.getSummits()) {
-				if (!chat.alreadyTaken(s, s.getOtherEnd(nextEdge)) && !chat.hasForDestination(s.getOtherEnd(nextEdge)))
+				if (!chat.alreadyTaken(s) && !chat.hasForDestination(s.getOtherEnd(nextEdge)))
 					possibilities.add(new CostSummit(s.getLength(), null, nextEdge, s));
 			}
 		}
@@ -111,7 +111,7 @@ public class Robot extends Thread {
 			nextNextEdge = summitTested.getSummit().getOtherEnd(summitTested.getPreviousEdge());
 			if (!seenEdges.contains(nextNextEdge)) {
 				for (ISummit s : nextNextEdge.getSummits()) {
-					if (!chat.alreadyTaken(s, s.getOtherEnd(nextNextEdge)))
+					if (!chat.alreadyTaken(s))
 						possibilities.add(
 								new CostSummit(s.getLength() + summitTested.getCost(), summitTested, nextNextEdge, s));
 					else if (chat.hasForDestination(nextNextEdge)) {
@@ -127,7 +127,9 @@ public class Robot extends Thread {
 			}
 			possibilities.remove(possibilities.first());
 
-			if (searchHospital)
+			// If we search an hospital
+			if (nbVictimsInside >= CAPACITY
+					|| (Main.objectives.isEmpty() && nbVictimsInside > 0 && !localObjective.isObjective()))
 				found = summitTested.getSummit().isHospital();
 			else
 				found = Main.objectives.contains(summitTested.getSummit())
@@ -154,9 +156,8 @@ public class Robot extends Thread {
 
 		do {
 			way.clear();
-			makeWay(nbVictimsInside >= CAPACITY
-					|| (Main.objectives.isEmpty() && nbVictimsInside > 0 && !localObjective.isObjective()));
-		} while (way.isEmpty() || chat.alreadyTaken(way.get(0), way.get(0).getOtherEnd(nextEdge))
+			makeWay();
+		} while (way.isEmpty() || chat.alreadyTaken(way.get(0))
 				|| chat.hasForDestination(way.get(0).getOtherEnd(nextEdge)));
 
 		chat.takePlace(way.get(0), nextEdge, way.get(0).getOtherEnd(nextEdge));
@@ -218,7 +219,7 @@ public class Robot extends Thread {
 			boolean neighbouringRobot = false;
 			nearSummits.addAll(nextEdge.getSummits());
 			for (ISummit s : nextEdge.getSummits()) {
-				if ((chat.alreadyTaken(s, s.getOtherEnd(nextEdge)) && !s.equals(currentSummit))
+				if ((chat.alreadyTaken(s) && !s.equals(currentSummit))
 						|| chat.hasForDestination(s.getOtherEnd(nextEdge))) {
 					neighbouringRobot = true;
 					nearSummits.remove(s);

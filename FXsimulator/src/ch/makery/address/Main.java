@@ -53,11 +53,9 @@ public class Main extends Application {
 	private final double proportionMaxX = 207d;
 	private final double proportionMaxY = 157d;
 
-	public final double minLengthPerSummit = 10d;
-	public final double minLengthCross = 8d * minLengthPerSummit;
-	public final double maxLengthCross = minLengthCross + minLengthCross / 2d;
-	public final double minLengthIntersection = 4d * minLengthPerSummit;
-	public final double maxLengthIntersection = minLengthIntersection + minLengthIntersection / 4d;
+	private final double minLengthPerSummit = 10d;
+	private final double minLengthIntersection = 2d * minLengthPerSummit;
+	private final double maxLengthIntersection = 2d * minLengthPerSummit;
 
 	public static NavigableSet<ISummit> objectives = new TreeSet<>();
 
@@ -79,7 +77,7 @@ public class Main extends Application {
 		}
 	}
 	
-	private static final int NB_ROBOTS = 4; // There will not be NB_ROBOTS robots, but a random value between 1 and
+	private static final int NB_ROBOTS = 2; // There will not be NB_ROBOTS robots, but a random value between 1 and
 												// NB_ROBOTS
 	private Map<Robot, RobotReprensentation> robotMap = new HashMap<>();
 	private Map<ISummit, Line> summitRepresentation = new TreeMap<>();
@@ -436,7 +434,7 @@ public class Main extends Application {
 		Scene scene = new Scene(root, xLength, yLength, Color.BLACK);
 		primaryStage.setScene(scene);
 
-		for (i = 0; i <= r.nextInt(nbSummits + 1) + 1; i++) {
+		for (i = 0; i <= 4/*r.nextInt(nbSummits + 1) + 1*/; i++) {
 			ISummit s = summitList.get(r.nextInt(nbSummits));
 			s.setObjective(true);
 			objectives.add(s);

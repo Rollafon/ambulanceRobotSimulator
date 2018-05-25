@@ -8,12 +8,14 @@ import java.util.TreeSet;
 
 import ch.makery.address.Main;
 import map.Coordinates;
+import map.Edge;
 import map.EdgeType;
 import map.IEdge;
 import map.ISummit;
+import map.Summit;
 
 public class Robot extends Thread {
-	private final double timeCoef = 30d;
+	private final double timeCoef = 40d;
 	private final int CAPACITY = 2; // The maximum number of victim that a robot can transport
 	private final double ESTIMATED_WAIT_TIME = 10000d; // This number is used to avoid crosses
 														// The more it will be high, the more robot will avoid to reach
@@ -208,48 +210,17 @@ public class Robot extends Thread {
 	}
 
 	private void endRobot() {
-		Random r = new Random();
 		Coordinates oldC = new Coordinates(0, 0);
-		List<ISummit> nearSummits = new LinkedList<>();
+		IEdge previousEdge = nextEdge;
+		nextEdge = new Edge(0, new TreeSet<>(), null, new Coordinates(idRobot * 10 + 5, 5));
+		oldC.setX(coordinates.getX());
+		oldC.setY(coordinates.getY());
+		envolveCoordinates();
+		main.printRobotMovement(0d, 100d * timeCoef, oldC, coordinates, new Summit("end", 0), true, this, "");
+		chat.freePlace(currentSummit, previousEdge);
+		chat.freeEdge(previousEdge);
 
-		main.robotFinished();
-
-		// While the server says it is not finished, the robot will avoid the others
-		while (!Main.isFinished) {
-			boolean neighbouringRobot = false;
-			nearSummits.addAll(nextEdge.getSummits());
-			for (ISummit s : nextEdge.getSummits()) {
-				if ((chat.alreadyTaken(s) && !s.equals(currentSummit))
-						|| chat.hasForDestination(s.getOtherEnd(nextEdge))) {
-					neighbouringRobot = true;
-					nearSummits.remove(s);
-				}
-			}
-
-			if (!nearSummits.isEmpty() && neighbouringRobot || currentSummit.isHospital()) {
-				chat.freePlace(currentSummit, nextEdge);
-				IEdge previousEdge = nextEdge;
-				currentSummit = nearSummits.get(r.nextInt(nearSummits.size()));
-				nextEdge = currentSummit.getOtherEnd(previousEdge);
-				double duration = currentSummit.getLength() * timeCoef;
-				oldC.setX(coordinates.getX());
-				oldC.setY(coordinates.getY());
-				envolveCoordinates();
-				if (isExternalCurve(currentSummit))
-					main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit, false, this, "");
-				else
-					main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit, true, this, "");
-				chat.takePlace(currentSummit, previousEdge, nextEdge);
-				try {
-					Thread.sleep((long) duration);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			nearSummits.clear();
-		}
-
-		System.out.println("Robot " + idRobot + " finished.");
+System.out.println("Robot " + idRobot + " finished.");
 	}
 
 	@Override

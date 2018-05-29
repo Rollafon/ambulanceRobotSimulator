@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
-import ch.makery.address.Main;
+import main.Main;
 import map.Coordinates;
 import map.Edge;
 import map.EdgeType;
@@ -180,7 +180,7 @@ public class Robot extends Thread {
 		if (e[0].getType().equals(e[1].getType()) && e[0].getType().equals(EdgeType.CROSS)) {
 			for (ISummit s0 : e[0].getSummits()) {
 				for (ISummit s1 : e[1].getSummits()) {
-					if (!s0.equals(s1) && Main.asSameEnds(s0, s1)) {
+					if (!s0.equals(s1) && s0.asSameEnds(s1)) {
 						return (s0.getLength() <= s.getLength() && s1.getLength() <= s.getLength());
 					}
 				}
@@ -216,11 +216,12 @@ public class Robot extends Thread {
 		oldC.setX(coordinates.getX());
 		oldC.setY(coordinates.getY());
 		envolveCoordinates();
-		main.printRobotMovement(0d, 100d * timeCoef, oldC, coordinates, new Summit("end", 0), true, this, "");
+		main.printRobotMovement(100d * timeCoef, oldC, coordinates, new Summit("end", 0), true, this, "");
 		chat.freePlace(currentSummit, previousEdge);
 		chat.freeEdge(previousEdge);
 
-System.out.println("Robot " + idRobot + " finished.");
+		System.out.println("Robot " + idRobot + " finished.");
+		main.robotFinished();
 	}
 
 	@Override
@@ -242,10 +243,10 @@ System.out.println("Robot " + idRobot + " finished.");
 			envolveCoordinates();
 
 			if (isExternalCurve(currentSummit)) {
-				main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit, false, this,
+				main.printRobotMovement(duration, oldC, coordinates, currentSummit, false, this,
 						localObjective.getName() + " - " + nbVictimsInside + "/" + CAPACITY);
 			} else {
-				main.printRobotMovement(0d, duration, oldC, coordinates, currentSummit, true, this,
+				main.printRobotMovement(duration, oldC, coordinates, currentSummit, true, this,
 						localObjective.getName() + " - " + nbVictimsInside + "/" + CAPACITY);
 			}
 

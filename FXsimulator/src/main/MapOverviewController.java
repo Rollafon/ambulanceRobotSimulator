@@ -1,4 +1,4 @@
-package ch.makery.address.view;
+package main;
 
 // To keep if we want to interact with the graphic map
 public class MapOverviewController {

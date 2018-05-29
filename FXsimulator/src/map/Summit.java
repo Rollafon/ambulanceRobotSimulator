@@ -112,5 +112,10 @@ public class Summit implements ISummit, Comparable<Summit> {
 	public boolean isHospital() {
 		return hospital;
 	}
-
+	
+	public boolean asSameEnds(ISummit other) {
+		IEdge[] e1 = getEnds();
+		IEdge[] e2 = other.getEnds();
+		return ((e1[0].equals(e2[0]) && e1[1].equals(e2[1])) || (e1[0].equals(e2[1]) && e1[1].equals(e2[0])));
+	}
 }

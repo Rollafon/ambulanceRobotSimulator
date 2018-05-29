@@ -23,4 +23,5 @@ public interface ISummit {
 	
 	public boolean isHospital();
 	
+	public boolean asSameEnds(ISummit other);
 }

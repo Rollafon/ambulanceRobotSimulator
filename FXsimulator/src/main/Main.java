@@ -752,8 +752,8 @@ public class Main extends Application {
 	}
 
 	/**
-	 * Each robot will say when it finished to the main server, and the server will know
-	 * if the simulation has ended or not
+	 * Each robot will say when it finished to the main server, and the server will
+	 * know if the simulation has ended or not
 	 */
 	public synchronized void robotFinished() {
 		nbRobotsAlive--;

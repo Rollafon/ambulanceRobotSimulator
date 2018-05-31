@@ -15,7 +15,7 @@ import map.ISummit;
 import map.Summit;
 
 public class Robot extends Thread {
-	private final double timeCoef = 40d;
+	private final double timeCoef = 60d;
 	private final int CAPACITY = 2; // The maximum number of victim that a robot can transport
 	private final double ESTIMATED_WAIT_TIME = 10000d; // This number is used to avoid crosses
 														// The more it will be high, the more robot will avoid to reach

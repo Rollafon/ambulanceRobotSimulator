@@ -1,26 +1,61 @@
 package map;
 
+/**
+ * This class is used to represent the coordinates of graphics objects
+ * 
+ * @author Romain LAFON
+ */
 public class Coordinates {
 	private double x;
 	private double y;
-	
-	public Coordinates (double x, double y) {
+
+	/**
+	 * Constructor
+	 * 
+	 * @param x:
+	 *            the x position of the coordinates
+	 * @param y:
+	 *            the y position of the coordinates
+	 */
+	public Coordinates(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
-	
+
+	/**
+	 * Getter on the x position
+	 * 
+	 * @return the x position
+	 */
 	public double getX() {
 		return x;
 	}
-	
+
+	/**
+	 * Getter on the y position
+	 * 
+	 * @return the y position
+	 */
 	public double getY() {
 		return y;
 	}
 
+	/**
+	 * Setter on the x position
+	 * 
+	 * @param x:
+	 *            the new x position
+	 */
 	public void setX(double x) {
 		this.x = x;
 	}
 
+	/**
+	 * Setter on the y position
+	 * 
+	 * @param y:
+	 *            the new y position
+	 */
 	public void setY(double y) {
 		this.y = y;
 	}
@@ -52,7 +87,4 @@ public class Coordinates {
 			return false;
 		return true;
 	}
-	
-	
-	
 }

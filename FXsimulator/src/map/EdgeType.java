@@ -1,7 +1,7 @@
 package map;
 
 /**
- * Content the possible types for an edge
+ * Contain the possible types for an edge
  * 
  * @author Romain LAFON
  */

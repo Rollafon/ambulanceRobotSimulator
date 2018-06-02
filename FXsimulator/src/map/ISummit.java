@@ -1,7 +1,7 @@
 package map;
 
 /**
- * Interface representing he roads of the map
+ * Represent the roads of the map
  * 
  * @author Romain LAFON
  */
@@ -54,7 +54,7 @@ public interface ISummit {
 	public int hashCode();
 
 	/**
-	 * Says if the road is equal to another object
+	 * Say if the road is equal to another object
 	 * 
 	 * @param o:
 	 *            the object to compare
@@ -64,7 +64,7 @@ public interface ISummit {
 	public boolean equals(Object o);
 
 	/**
-	 * Says if there is a victim on the summit
+	 * Say if there is a victim on the summit
 	 * 
 	 * @return true if there a victim, or false otherwise
 	 */
@@ -80,7 +80,7 @@ public interface ISummit {
 	public void setObjective(boolean b);
 
 	/**
-	 * Says if the summit is an hospital
+	 * Say if the summit is an hospital
 	 * 
 	 * @return true if the summit is an hospital, or false otherwise
 	 */

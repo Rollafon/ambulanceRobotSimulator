@@ -15,7 +15,7 @@ import map.ISummit;
 import map.Summit;
 
 public class Robot extends Thread {
-	private final double timeCoef = 60d;
+	private final double timeCoef = 30d;
 	private final int CAPACITY = 2; // The maximum number of victim that a robot can transport
 	private final double ESTIMATED_WAIT_TIME = 10000d; // This number is used to avoid crosses
 														// The more it will be high, the more robot will avoid to reach
@@ -25,7 +25,7 @@ public class Robot extends Thread {
 	private IEdge nextEdge;
 	private Coordinates coordinates = new Coordinates(0, 0);
 	private List<ISummit> way = new LinkedList<>();
-	private CommunicationChannel chat;
+	private ChatChannel chat;
 	private int idRobot;
 	private int nbVictimsInside = 0;
 	private ISummit localObjective = null;
@@ -35,7 +35,7 @@ public class Robot extends Thread {
 
 	// At the beginning, the robot is placed on a summit, moving to the edge
 	// nextEdge
-	public Robot(ISummit startSummit, IEdge nextEdge, CommunicationChannel chat, Main main, int idRobot) {
+	public Robot(ISummit startSummit, IEdge nextEdge, ChatChannel chat, Main main, int idRobot) {
 		Random r = new Random();
 		this.currentSummit = startSummit;
 		if (nextEdge == null)
@@ -154,7 +154,7 @@ public class Robot extends Thread {
 	}
 
 	private void chooseDirection() {
-		chat.freePlace(currentSummit, nextEdge);
+		chat.freePlace(currentSummit);
 
 		do {
 			way.clear();
@@ -217,7 +217,7 @@ public class Robot extends Thread {
 		oldC.setY(coordinates.getY());
 		envolveCoordinates();
 		main.printRobotMovement(100d * timeCoef, oldC, coordinates, new Summit("end", 0), true, this, "");
-		chat.freePlace(currentSummit, previousEdge);
+		chat.freePlace(currentSummit);
 		chat.freeEdge(previousEdge);
 
 		System.out.println("Robot " + idRobot + " finished.");

@@ -1,7 +1,7 @@
 package map;
 
 /**
- * This class is used to represent the coordinates of graphics objects
+ * Represent the coordinates of graphics objects
  * 
  * @author Romain LAFON
  */
@@ -60,6 +60,11 @@ public class Coordinates {
 		this.y = y;
 	}
 
+	/**
+	 * Generate an hashcode for the coordinates
+	 * 
+	 * @return an integer representing the hashcode
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -72,6 +77,14 @@ public class Coordinates {
 		return result;
 	}
 
+	/**
+	 * Say if a couple of coordinates is equals to another object or not
+	 * 
+	 * @param o:
+	 *            the object to compare
+	 * @return true if the specified object is also a couple of coordinates, and if
+	 *         its have the same x and y values, or false otherwise
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

@@ -1,11 +1,5 @@
 package main;
 
-/**
- * Main class
- * @author LAFON Romain
- * @since JDK 1.8
- */
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,17 +30,14 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import map.Coordinates;
-import map.Edge;
-import map.EdgeType;
-import map.Graph;
-import map.IEdge;
-import map.IGraph;
-import map.ISummit;
-import map.Summit;
-import robot.CommunicationChannel;
-import robot.Robot;
+import map.*;
+import robot.*;
 
+/**
+ * Main class
+ * @author LAFON Romain
+ * @since JDK 1.8
+ */
 public class Main extends Application {
 	private final double xMin = 50d; // Indicate the minimal x position on the window
 	private final double xMax = 1850d; // Indicate the maximal x position on the window
@@ -419,7 +410,7 @@ public class Main extends Application {
 	}
 
 	/**
-	 * Initializes the root layout
+	 * Initialize the root layout
 	 */
 	public void initRootLayout() {
 		try {
@@ -438,7 +429,7 @@ public class Main extends Application {
 	}
 
 	/**
-	 * Initializes the drawing of the map
+	 * Initialize the drawing of the map
 	 */
 	public void showMapOverview() {
 		try {
@@ -454,7 +445,7 @@ public class Main extends Application {
 	}
 
 	/**
-	 * Initializes the robots, the objectives and create the graph With that
+	 * Initialize the robots, the objectives and create the graph With that
 	 * implementation, there will be 2 robots and 5 victims
 	 * 
 	 * @param primaryStage:
@@ -463,7 +454,7 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		List<ISummit> summitList = graph.getSummitList();
-		CommunicationChannel chat = new CommunicationChannel();
+		ChatChannel chat = new ChatChannel();
 
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Robot Simulator");
@@ -546,7 +537,7 @@ public class Main extends Application {
 	}
 
 	/**
-	 * This method is used to print the external curves over a cross
+	 * Print the external curves over a cross
 	 * 
 	 * @param s:
 	 *            the summit to be printed

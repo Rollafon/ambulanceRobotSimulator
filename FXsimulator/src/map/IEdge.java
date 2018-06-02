@@ -3,8 +3,7 @@ package map;
 import java.util.NavigableSet;
 
 /**
- * Interface for edges that are used to represent the points where more than two
- * roads are adjacent
+ * Represent the points of the map where more than two roads are adjacent
  * 
  * @author Romain LAFON
  *
@@ -47,7 +46,7 @@ public interface IEdge {
 	public int hashCode();
 
 	/**
-	 * Says if an edge is equals to another object or not
+	 * Say if an edge is equals to another object or not
 	 * 
 	 * @param o:
 	 *            the object to compare

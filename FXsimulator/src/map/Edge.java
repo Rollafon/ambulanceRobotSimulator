@@ -3,7 +3,7 @@ package map;
 import java.util.NavigableSet;
 
 /**
- * This class is used to represent the points where more than two roads are
+ * Represent the points of the map where more than two roads are
  * adjacent coming
  * 
  * @author Romain LAFON
@@ -91,7 +91,7 @@ public class Edge implements IEdge {
 	}
 
 	/**
-	 * Says if an edge is equals to another object or not
+	 * Say if an edge is equals to another object or not
 	 * 
 	 * @param o:
 	 *            the object to compare

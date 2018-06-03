@@ -20,7 +20,7 @@ import map.Summit;
  * @author Romain LAFON
  */
 public class Robot extends Thread {
-	private final double timeCoef = 40d; // Coefficient used to determinate the speed of the robot
+	private final double TIMECOEF = 40d; // Coefficient used to determinate the speed of the robot
 	private final int CAPACITY = 2; // The maximum number of victim that a robot can transport
 	private final double ESTIMATED_WAIT_TIME = 10000d; // This number is used to avoid crosses
 														// The more it will be high, the more robot will avoid the other
@@ -366,7 +366,7 @@ public class Robot extends Thread {
 		oldC.setX(coordinates.getX());
 		oldC.setY(coordinates.getY());
 		envolveCoordinates();
-		main.printRobotMovement(100d * timeCoef, oldC, coordinates, new Summit("end", 0), true, this, "");
+		main.printRobotMovement(100d * TIMECOEF, oldC, coordinates, new Summit("end", 0), true, this, "");
 		chat.freePlace(currentSummit);
 		chat.freeEdge(previousEdge);
 
@@ -389,7 +389,7 @@ public class Robot extends Thread {
 			chooseDirection();
 
 			// Define the transition duration
-			duration = timeCoef * currentSummit.getLength();
+			duration = TIMECOEF * currentSummit.getLength();
 
 			// Define the end coordinates of the movement
 			oldC.setX(coordinates.getX());

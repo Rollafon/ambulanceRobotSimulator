@@ -23,3 +23,5 @@ To change the robot constant speed, go to Robot.java. In the constant variables,
 
 
 Some parts of the code are never used. These parts are concerning crosses. The final map does not have any cross, but it was planned to be. However, the lack of time did not permit to develop the intelligence of crossing to robots. Parts of the code concerning crosses had been kept in prospect to improve the intelligence.
+
+Here is a link to photos and videos of the simulator and of robots. https://drive.google.com/drive/folders/1J1dHO1LULZshwB_YDiqMmbf3ftuhPYjZ?usp=sharing

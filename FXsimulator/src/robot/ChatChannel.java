@@ -18,7 +18,9 @@ public class ChatChannel {
 
 	/**
 	 * Say if a robot is already on the given summit
-	 * @param summit: the summit to check
+	 * 
+	 * @param summit:
+	 *            the summit to check
 	 * @return true if another robot is already on the summit or false otherwise
 	 */
 	public synchronized boolean alreadyTaken(ISummit summit) {
@@ -27,7 +29,9 @@ public class ChatChannel {
 
 	/**
 	 * Say if there is already another robot going to the given edge
-	 * @param edge: the edge to check
+	 * 
+	 * @param edge:
+	 *            the edge to check
 	 * @return true if another robot is already going to edge or false otherwise
 	 */
 	public synchronized boolean hasForDestination(IEdge edge) {
@@ -36,7 +40,9 @@ public class ChatChannel {
 
 	/**
 	 * Indicate that the previous summit is now free
-	 * @param oldSummit: the summit that the robot leave
+	 * 
+	 * @param oldSummit:
+	 *            the summit that the robot leave
 	 */
 	public synchronized void freePlace(ISummit oldSummit) {
 		summitsTaken.remove(oldSummit);
@@ -44,7 +50,9 @@ public class ChatChannel {
 
 	/**
 	 * Indicate that the robot is now out of the given edge
-	 * @param e: the freed edge
+	 * 
+	 * @param e:
+	 *            the freed edge
 	 */
 	public synchronized void freeEdge(IEdge e) {
 		busyEdges.remove(e);
@@ -52,9 +60,13 @@ public class ChatChannel {
 
 	/**
 	 * Indicate that a robot is now on the given summit going to the given next edge
-	 * @param newSummit: the summit where the robot had just been inserted
-	 * @param oldEdge: the robot old position
-	 * @param nextEdge: the robot next position
+	 * 
+	 * @param newSummit:
+	 *            the summit where the robot had just been inserted
+	 * @param oldEdge:
+	 *            the robot old position
+	 * @param nextEdge:
+	 *            the robot next position
 	 */
 	public synchronized void takePlace(ISummit newSummit, IEdge oldEdge, IEdge nextEdge) {
 		if (oldEdge != null)

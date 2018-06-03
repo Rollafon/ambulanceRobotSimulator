@@ -140,7 +140,7 @@ public class Main extends Application {
 	 * The graph represent the map, summits are roads and edge are the points where
 	 * robots need to take a decision
 	 * 
-	 * The current map is represented in a joined file
+	 * This map is represented in a joined file (called "Final map.png")
 	 * 
 	 * To change the map or hospital position, modifications have to be done here
 	 * 
